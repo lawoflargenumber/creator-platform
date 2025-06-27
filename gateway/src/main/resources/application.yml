@@ -1,0 +1,92 @@
+server:
+  port: 8088
+
+---
+
+spring:
+  profiles: default
+  cloud:
+    gateway:
+#<<< API Gateway / Routes
+      routes:
+        - id: account
+          uri: http://localhost:8082
+          predicates:
+            - Path=/users/**, 
+        - id: writing
+          uri: http://localhost:8083
+          predicates:
+            - Path=/drafts/**, /checkAuthors/**
+        - id: publish
+          uri: http://localhost:8084
+          predicates:
+            - Path=/products/**, 
+        - id: view
+          uri: http://localhost:8085
+          predicates:
+            - Path=/userAccessProfiles/**, /checkPrices/**, /checkIfBoughts/**, /viewHistories/**
+        - id: ai
+          uri: http://localhost:8086
+          predicates:
+            - Path=/undefined/**, 
+        - id: frontend
+          uri: http://localhost:8080
+          predicates:
+            - Path=/**
+#>>> API Gateway / Routes
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+
+---
+
+spring:
+  profiles: docker
+  cloud:
+    gateway:
+      routes:
+        - id: account
+          uri: http://account:8080
+          predicates:
+            - Path=/users/**, 
+        - id: writing
+          uri: http://writing:8080
+          predicates:
+            - Path=/drafts/**, 
+        - id: publish
+          uri: http://publish:8080
+          predicates:
+            - Path=/products/**, 
+        - id: view
+          uri: http://view:8080
+          predicates:
+            - Path=/userAccessProfiles/**, 
+        - id: ai
+          uri: http://ai:8080
+          predicates:
+            - Path=/undefined/**, 
+        - id: frontend
+          uri: http://frontend:8080
+          predicates:
+            - Path=/**
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+server:
+  port: 8080

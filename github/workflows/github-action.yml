@@ -1,0 +1,87 @@
+name: github-action
+run-name: ${{ github.actor }} is out building GitHub Actions
+
+on:
+  push:
+    # Pattern matched against refs/tags
+    tags:        
+      - '**' 
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Build Maven Projects
+        run: |
+          mvn clean package -f ./account/pom.xml
+          mvn clean package -f ./writing/pom.xml
+          mvn clean package -f ./publish/pom.xml
+          mvn clean package -f ./view/pom.xml
+          mvn clean package -f ./ai/pom.xml
+
+      - name: Docker Build and push for Account
+        uses: docker/build-push-action@v4
+        with:
+          context: ./account
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/account:latest
+            ghcr.io/${{ github.repository }}/account:${{ github.ref_name }}
+            
+      - name: Docker Build and push for Writing
+        uses: docker/build-push-action@v4
+        with:
+          context: ./writing
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/writing:latest
+            ghcr.io/${{ github.repository }}/writing:${{ github.ref_name }}
+            
+      - name: Docker Build and push for Publish
+        uses: docker/build-push-action@v4
+        with:
+          context: ./publish
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/publish:latest
+            ghcr.io/${{ github.repository }}/publish:${{ github.ref_name }}
+            
+      - name: Docker Build and push for View
+        uses: docker/build-push-action@v4
+        with:
+          context: ./view
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/view:latest
+            ghcr.io/${{ github.repository }}/view:${{ github.ref_name }}
+            
+      - name: Docker Build and push for Ai
+        uses: docker/build-push-action@v4
+        with:
+          context: ./ai
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/ai:latest
+            ghcr.io/${{ github.repository }}/ai:${{ github.ref_name }}
+            
