@@ -1,3 +1,4 @@
+
 package creatorplatform.domain;
 
 import creatorplatform.domain.*;

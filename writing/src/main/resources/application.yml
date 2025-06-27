@@ -1,81 +1,61 @@
+# 공통 설정
 server:
-  port: 8080
+  port: 8080            # 로컬 기본 포트
 
 spring:
   application:
     name: writing
----
 
+# -------- default 프로필 (로컬 개발) --------
+---
 spring:
   profiles: default
+  datasource:
+    url: jdbc:h2:mem:writing
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
   jpa:
-    properties:
-      hibernate:
-        show_sql: true
-        format_sql: true
-        implicit_naming_strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
+    hibernate:
+      ddl-auto: update
   cloud:
     stream:
       kafka:
         binder:
           brokers: localhost:9092
-        streams:
-          binder:
-            configuration:
-              default:
-                key:
-                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-                value:
-                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
       bindings:
         event-in:
           group: writing
-#<<< EDA / Topic Name
           destination: creatorplatform
-#>>> EDA / Topic Name
           contentType: application/json
         event-out:
-#<<< EDA / Topic Name
           destination: creatorplatform
-#>>> EDA / Topic Name
           contentType: application/json
+
+authors:
+  url: http://localhost:8081   # 임시 계정 서비스 주소
 
 logging:
   level:
     org.hibernate.type: trace
     org.springframework.cloud: debug
 
-api:
-  url: 
-    writing: localhost:8083 
-    
-
-server:
-  port: 8083
-
+# -------- docker 프로필 --------
 ---
-
 spring:
   profiles: docker
+  datasource:
+    url: jdbc:mysql://mysql:3306/writing
+    username: root
+    password: root
   jpa:
-    properties:
-      hibernate:
-        show_sql: true
-        format_sql: true
-        implicit_naming_strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
+    hibernate:
+      ddl-auto: update
   cloud:
     stream:
       kafka:
         binder:
           brokers: my-kafka:9092
-        streams:
-          binder:
-            configuration:
-              default:
-                key:
-                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-                value:
-                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
       bindings:
         event-in:
           group: writing
@@ -85,8 +65,5 @@ spring:
           destination: creatorplatform
           contentType: application/json
 
-api:
-  url: 
-    writing: writing:8080 
-    
-
+authors:
+  url: http://account:8081     # 도커 네트워크상의 계정 MS
