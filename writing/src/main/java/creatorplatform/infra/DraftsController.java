@@ -51,7 +51,15 @@ public class DraftsController {
         Drafts draft = repo.findById(id)
                            .orElseThrow(() -> new RuntimeException("Draft not found"));
     draft.updateDraft(cmd);
-    return repo.save(draft);     
+    return repo.save(draft);
+         
 }
-}
+    @DeleteMapping("/{id}")
+    public void deleteDraft(@PathVariable Long id) {
+        if (repo.existsById(id)) {
+            repo.deleteById(id);
+        } else {
+            throw new RuntimeException("Draft not found");
+    }
+}}
   
