@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collections;
 
 
+
 @Entity
 @Table(name="UserAccessProfile_table")
 @Data
@@ -34,7 +35,6 @@ private Integer points;
     
 private Date subscribtionDue;
 
-
     public static UserAccessProfileRepository repository(){
         UserAccessProfileRepository userAccessProfileRepository = ViewApplication.applicationContext.getBean(UserAccessProfileRepository.class);
         return userAccessProfileRepository;
@@ -43,19 +43,21 @@ private Date subscribtionDue;
 
 
 //<<< Clean Arch / Port Method
-    public void accessToContent(AccessToContentCommand accessToContentCommand){
+    public void accessToContent(AccessToContentCommand accessToContentCommand, boolean isBought){
         
-        //implement business logic here:
+        // 구독 상태 검증
+        boolean hasSubscription = isSubscribed != null && isSubscribed;
+        boolean hasSufficientPoints = points != null && points >= 100;
         
-
-          = UserAccessProfileApplication.applicationContext
-            .getBean(creatorplatform.external.Service.class)
-            .checkIfBought(get??);
-
-        AccessGranted accessGranted = new AccessGranted(this);
-        accessGranted.publishAfterCommit();
-        AccessDenied accessDenied = new AccessDenied(this);
-        accessDenied.publishAfterCommit();
+        // 순수한 비즈니스 규칙
+        if (isBought || hasSubscription || hasSufficientPoints) {
+            AccessGranted accessGranted = new AccessGranted(this);
+            accessGranted.setProductId(accessToContentCommand.getProductId());
+            accessGranted.publishAfterCommit();
+        } else {
+            AccessDenied accessDenied = new AccessDenied(this);
+            accessDenied.publishAfterCommit();
+        }
     }
 //>>> Clean Arch / Port Method
 
