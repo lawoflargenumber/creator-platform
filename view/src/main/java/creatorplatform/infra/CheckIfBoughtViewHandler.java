@@ -29,6 +29,7 @@ public class CheckIfBoughtViewHandler {
             // view 객체에 이벤트의 Value 를 set 함
             checkIfBought.setId(accessGranted.getId());
             checkIfBought.setProductId(accessGranted.getProductId());
+            // checkId는 자동 생성되므로 설정하지 않음
             // view 레파지 토리에 save
             checkIfBoughtRepository.save(checkIfBought);
         } catch (Exception e) {
