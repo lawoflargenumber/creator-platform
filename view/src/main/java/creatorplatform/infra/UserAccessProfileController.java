@@ -1,6 +1,7 @@
 package creatorplatform.infra;
 
 import creatorplatform.domain.*;
+import creatorplatform.service.UserAccessProfileService;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserAccessProfileController {
 
     @Autowired
-    UserAccessProfileRepository userAccessProfileRepository;
+    private UserAccessProfileService userAccessProfileService;
 
     @RequestMapping(
         value = "/userAccessProfiles/{id}/accesstocontent",
@@ -34,18 +35,8 @@ public class UserAccessProfileController {
         System.out.println(
             "##### /userAccessProfile/accessToContent  called #####"
         );
-        Optional<UserAccessProfile> optionalUserAccessProfile = userAccessProfileRepository.findById(
-            id
-        );
-
-        optionalUserAccessProfile.orElseThrow(() ->
-            new Exception("No Entity Found")
-        );
-        UserAccessProfile userAccessProfile = optionalUserAccessProfile.get();
-        userAccessProfile.accessToContent(accessToContentCommand);
-
-        userAccessProfileRepository.save(userAccessProfile);
-        return userAccessProfile;
+        
+        return userAccessProfileService.accessToContent(id, accessToContentCommand);
     }
 }
 //>>> Clean Arch / Inbound Adaptor

@@ -1,0 +1,5 @@
+# IDE 설정 파일들
+/.vscode/
+
+# Maven 캐시 디렉토리 (Docker 볼륨 마운트용)
+/maven-repo/

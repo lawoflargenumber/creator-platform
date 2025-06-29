@@ -14,7 +14,7 @@ public class CheckPrice {
 
     @Id
     //@GeneratedValue(strategy=GenerationType.AUTO)
-    private Long id;
+    private Long productId;
 
     private Integer price;
 }
