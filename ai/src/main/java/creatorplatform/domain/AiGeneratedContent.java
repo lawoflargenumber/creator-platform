@@ -1,59 +1,63 @@
 package creatorplatform.domain;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import creatorplatform.AiApplication;
-import creatorplatform.domain.GeneratedInitialContent;
-import java.time.LocalDate;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+
 import javax.persistence.*;
-import lombok.Data;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "AiGeneratedContent_table")
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 //<<< DDD / Aggregate Root
 public class AiGeneratedContent {
 
     @Id
     private Long id;
-
     private Long authorId;
-
     private String authorNickname;
-
     private String title;
-
+    @Lob
     private String content;
-
     private String summary;
+    private Integer price;
+    private String coverImageUrl;
 
-    private String coverImageurl;
+    @Enumerated(EnumType.STRING)
+    private Category category;
 
-    public class AiGeneratedContent(RequestedPublication request) {
-        this.id = request.getId();
-        this.authorId = request.getAuthorId();
-        this.authorNickname = request.getAuthorNickname();
-        this.title = request.getTitle();
-        this.content = request.getContent();
+    @Enumerated(EnumType.STRING)
+    private ProcessingStatus status;
+
+    public static AiGeneratedContent createFrom(Long bookId, Long authorId, String authorNickname, String title, String content) {
+        AiGeneratedContent generatedContent = new AiGeneratedContent();
+        generatedContent.id = bookId;
+        generatedContent.authorId = authorId;
+        generatedContent.authorNickname = authorNickname;
+        generatedContent.title = title;
+        generatedContent.content = content;
+        generatedContent.status = ProcessingStatus.PENDING;
+
+        return generatedContent;
     }
 
-    public static AiGeneratedContentRepository repository() {
-        AiGeneratedContentRepository aiGeneratedContentRepository = AiApplication.applicationContext.getBean(
-            AiGeneratedContentRepository.class
-        );
-        return aiGeneratedContentRepository;
+    public void applyGeneratedContent(String summary, Integer price, String coverImageUrl, Category category) {
+        this.summary = summary;
+        this.price = price;
+        this.coverImageUrl = coverImageUrl;
+        this.category = category;
+        this.status = ProcessingStatus.GENERATED;
     }
 
-    //<<< Clean Arch / Port Method
-    public static void generateInitialContent(
-        RequestedPublication requestedPublication
-    ) {
-        
-    }
-    //>>> Clean Arch / Port Method
+    public void completeGeneration() {
+        this.status = ProcessingStatus.COMPLETED;
 
+        CompletedGeneration completedGeneration = new CompletedGeneration(this);
+        completedGeneration.publishAfterCommit();
+    }
 }
 //>>> DDD / Aggregate Root

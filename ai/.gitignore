@@ -46,3 +46,4 @@ node_modules
 .pem
 .env
 .env.*
+application-local.yml
