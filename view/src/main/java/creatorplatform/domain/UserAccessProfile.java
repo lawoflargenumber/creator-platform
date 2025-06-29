@@ -1,17 +1,13 @@
 package creatorplatform.domain;
-
-import creatorplatform.ViewApplication;
 import javax.persistence.*;
-import java.util.List;
 import lombok.Data;
 import java.util.Date;
-import java.time.LocalDate;
-import java.util.Map;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Collections;
 
-
-
+/**
+ * Domain Entity (Aggregate Root)
+ * 역할: 이벤트 발행 + 데이터 모델링
+ * vs Application Service: 복잡한 비즈니스 프로세스는 Service Layer에서 처리
+ */
 @Entity
 @Table(name="UserAccessProfile_table")
 @Data
@@ -22,8 +18,7 @@ public class UserAccessProfile  {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     
-    
-    
+
 private Long id;    
     
     
@@ -35,85 +30,37 @@ private Integer points;
     
 private Date subscribtionDue;
 
-    public static UserAccessProfileRepository repository(){
-        UserAccessProfileRepository userAccessProfileRepository = ViewApplication.applicationContext.getBean(UserAccessProfileRepository.class);
-        return userAccessProfileRepository;
-    }
-
-
-
 //<<< Clean Arch / Port Method
-    public void accessToContent(AccessToContentCommand accessToContentCommand, boolean isBought){
-        
-        // 구독 상태 검증
-        boolean hasSubscription = isSubscribed != null && isSubscribed;
-        boolean hasSufficientPoints = points != null && points >= 100;
-        
-        // 순수한 비즈니스 규칙
-        if (isBought || hasSubscription || hasSufficientPoints) {
-            AccessGranted accessGranted = new AccessGranted(this);
-            accessGranted.setProductId(accessToContentCommand.getProductId());
-            accessGranted.publishAfterCommit();
-        } else {
-            AccessDenied accessDenied = new AccessDenied(this);
-            accessDenied.publishAfterCommit();
-        }
+    /**
+     * 접근 허용 도메인 이벤트 발행
+     * 이벤트: AccessGranted (View → 다른 서비스)
+     * 트리거: 구매완료, 구독자 접근, 포인트구매 완료
+     */
+    public void publishAccessGranted(Long productId, Integer price) {
+        AccessGranted accessGranted = new AccessGranted(this);
+        accessGranted.setProductId(productId);
+        accessGranted.setPrice(price);
+        accessGranted.publishAfterCommit();
+        System.out.println(" AccessGranted 이벤트 발행: userId=" + this.id + 
+                          ", productId=" + productId + ", price=" + price);
     }
-//>>> Clean Arch / Port Method
-
-//<<< Clean Arch / Port Method
-    public static void addUser(UserRegistered userRegistered){
+    
+    /**
+     * 접근 거부 도메인 이벤트 발행  
+     * 이벤트: AccessDenied (View → 다른 서비스)
+     * 트리거: 미구매 + 비구독자 접근
+     */
+    public void publishAccessDenied(Long productId, Integer price) {
+        AccessDenied accessDenied = new AccessDenied(this);
         
-        //implement business logic here:
+        // 포인트 충분 여부 계산 (현재 포인트 vs 상품 가격)
+        accessDenied.setHasSufficientPoints(
+            this.points != null && price != null && this.points >= price
+        );
         
-        /** Example 1:  new item 
-        UserAccessProfile userAccessProfile = new UserAccessProfile();
-        repository().save(userAccessProfile);
-
-        */
-
-        /** Example 2:  finding and process
-        
-
-        repository().findById(userRegistered.get???()).ifPresent(userAccessProfile->{
-            
-            userAccessProfile // do something
-            repository().save(userAccessProfile);
-
-
-         });
-        */
-
-        
+        accessDenied.publishAfterCommit();
+        System.out.println("AccessDenied 이벤트 발행: userId=" + this.id + 
+                          ", productId=" + productId + 
+                          ", hasSufficientPoints=" + accessDenied.getHasSufficientPoints());
     }
-//>>> Clean Arch / Port Method
-//<<< Clean Arch / Port Method
-    public static void addSubscription(SubscriptionStarted subscriptionStarted){
-        
-        //implement business logic here:
-        
-        /** Example 1:  new item 
-        UserAccessProfile userAccessProfile = new UserAccessProfile();
-        repository().save(userAccessProfile);
-
-        */
-
-        /** Example 2:  finding and process
-        
-
-        repository().findById(subscriptionStarted.get???()).ifPresent(userAccessProfile->{
-            
-            userAccessProfile // do something
-            repository().save(userAccessProfile);
-
-
-         });
-        */
-
-        
-    }
-//>>> Clean Arch / Port Method
-
-
 }
-//>>> DDD / Aggregate Root
