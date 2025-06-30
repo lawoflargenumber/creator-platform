@@ -1,49 +1,63 @@
 server:
-  port: 8080
+  port: 8082
+
+---
 
 spring:
   application:
     name: account
+
 ---
 
 spring:
   profiles: default
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/creator_db
+    username: root
+    password: password
+
   jpa:
+    hibernate:
+      ddl-auto: update
     properties:
       hibernate:
         show_sql: true
         format_sql: true
         implicit_naming_strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
-  cloud:
-    stream:
-      kafka:
-        binder:
-          brokers: localhost:9092
-        streams:
-          binder:
-            configuration:
-              default:
-                key:
-                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-                value:
-                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-      bindings:
-        event-in:
-          group: account
-#<<< EDA / Topic Name
-          destination: creatorplatform
-#>>> EDA / Topic Name
-          contentType: application/json
-        event-out:
-#<<< EDA / Topic Name
-          destination: creatorplatform
-#>>> EDA / Topic Name
-          contentType: application/json
 
-logging:
-  level:
-    org.hibernate.type: trace
-    org.springframework.cloud: debug
+jwt:
+  secret: change_this_in_prod
+  access-expiry: 3600
+  refresh-expiry: 604800
+
+  spring:
+    cloud:
+      stream:
+        kafka:
+          binder:
+            brokers: localhost:9092
+          streams:
+            binder:
+              configuration:
+                default:
+                  key:
+                    serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+                  value:
+                    serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+        bindings:
+          event-in:
+            group: account
+            destination: creatorplatform
+            contentType: application/json
+          event-out:
+            destination: creatorplatform
+            contentType: application/json
+
+  logging:
+    level:
+      org.hibernate.type: trace
+      org.springframework.cloud: debug
 
 
 server:
@@ -53,12 +67,14 @@ server:
 
 spring:
   profiles: docker
+
   jpa:
     properties:
       hibernate:
         show_sql: true
         format_sql: true
         implicit_naming_strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
+
   cloud:
     stream:
       kafka:
