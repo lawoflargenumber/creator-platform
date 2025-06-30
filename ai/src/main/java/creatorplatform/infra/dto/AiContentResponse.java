@@ -2,7 +2,9 @@ package creatorplatform.infra.dto;
 
 import creatorplatform.domain.AiGeneratedContent;
 import creatorplatform.domain.Category;
+import lombok.Getter;
 
+@Getter
 public class AiContentResponse {
 
     private final Long id;
