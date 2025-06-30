@@ -54,7 +54,7 @@ spring:
     gateway:
       routes:
         - id: account
-          uri: http://account:8080
+          uri: http://account:8082
           predicates:
             - Path=/users/**, 
         - id: writing
@@ -62,13 +62,13 @@ spring:
           predicates:
             - Path=/drafts/**, 
         - id: publish
-          uri: http://publish:8080
+          uri: http://publish:8084
           predicates:
-            - Path=/products/**, 
+            - Path=/products/**
         - id: view
-          uri: http://view:8080
+          uri: http://view:8085
           predicates:
-            - Path=/userAccessProfiles/**, 
+            - Path=/userAccessProfiles/**, /viewHistories/**
         - id: ai
           uri: http://ai:8080
           predicates:
