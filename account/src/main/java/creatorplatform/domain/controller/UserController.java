@@ -3,6 +3,7 @@ package creatorplatform.domain.controller;
 
 import creatorplatform.domain.command.*;
 import creatorplatform.domain.service.UserCommandService;
+import creatorplatform.domain.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -48,5 +49,15 @@ public class UserController {
     public ResponseEntity<Void> update(@RequestBody UpdateUserCommand cmd) {
         service.handleUpdateUser(cmd);
         return ResponseEntity.ok().build();
+    }
+}
+public class UserReadController {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @GetMapping("/{id}")
+    public Optional<RegisteredUser> getUserById(@PathVariable String id) {
+        return userRepository.findById(id);
     }
 }
