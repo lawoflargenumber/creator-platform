@@ -51,13 +51,3 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 }
-public class UserReadController {
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @GetMapping("/{id}")
-    public Optional<RegisteredUser> getUserById(@PathVariable String id) {
-        return userRepository.findById(id);
-    }
-}
