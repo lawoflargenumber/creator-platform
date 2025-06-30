@@ -64,7 +64,12 @@ public class Products {
 
     //<<< Clean Arch / Port Method
     public void trackView(TrackViewCommand trackViewCommand) {
-        //implement business logic here:
+        this.views += 1;  
+
+        ViewTracked viewTracked = new ViewTracked(this);
+        viewTracked.setUserId(trackViewCommand.getUserId());
+        viewTracked.setCreatedAt(new Date());
+        viewTracked.publishAfterCommit();
 
     }
     //>>> Clean Arch / Port Method
