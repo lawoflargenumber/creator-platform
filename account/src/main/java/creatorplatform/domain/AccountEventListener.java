@@ -1,11 +1,11 @@
 
-package com.example.account.listener;
+package creatorplatform.domain;
 
-import com.example.account.event.AuthorshipAcceptedEvent;
-import com.example.account.event.SubscriptionStartedEvent;
-import com.example.account.event.UserRegisteredEvent;
-import com.example.account.aggregate.RegisteredUser;
-import com.example.account.repository.UserRepository;
+import creatorplatform.domain.event.AuthorshipAcceptedEvent;
+import creatorplatform.domain.event.SubscriptionStartedEvent;
+import creatorplatform.domain.event.UserRegisteredEvent;
+import creatorplatform.domain.aggregate.RegisteredUser;
+import creatorplatform.domain.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
