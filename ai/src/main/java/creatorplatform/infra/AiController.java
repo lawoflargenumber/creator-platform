@@ -23,8 +23,8 @@ public class AiController {
     private AiGeneratorPort aiGenerator;
 
     @GetMapping("/{id}")
-    public ResponseEntity<AiContentResponse> getAiContents(@PathVariable Long bookId) {
-        return repository.findById(bookId)
+    public ResponseEntity<AiContentResponse> getAiContents(@PathVariable Long id) {
+        return repository.findById(id)
                 .map(AiContentResponse::fromEntity)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
