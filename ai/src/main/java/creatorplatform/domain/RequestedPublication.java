@@ -10,4 +10,8 @@ import lombok.*;
 public class RequestedPublication extends AbstractEvent {
 
     private Long id;
+    private Long authorId;
+    private String authorNickname;
+    private String title;
+    private String content;
 }

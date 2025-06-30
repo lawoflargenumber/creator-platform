@@ -44,3 +44,6 @@ secrets.yml
 node_modules
 .dist/
 .pem
+.env
+.env.*
+application-local.yml
