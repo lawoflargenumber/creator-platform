@@ -15,10 +15,17 @@ import java.util.List;
 public class DraftsController {
 
     private final DraftsRepository repo;
+    private final CheckAuthorsRepository checkAuthorsRepository;
 
     // ---------- 드래프트 저장 ----------
     @PostMapping("/savedraft")
     public EntityModel<Drafts> saveDraft(@RequestBody SaveDraftCommand cmd) {
+
+        String nickname = checkAuthorsRepository.findById(cmd.getAuthorId())
+                .map(CheckAuthors::getNickname)
+                .orElse(null);
+        cmd.setAuthorNickname(nickname);
+
         Drafts draft = new Drafts();
         draft.saveDraft(cmd);
         Drafts saved = repo.save(draft);
@@ -41,6 +48,11 @@ public class DraftsController {
     // ---------- 직접 출판 ----------
     @PostMapping("/publish")
     public Drafts directPublish(@RequestBody SaveDraftCommand cmd) {
+        String nickname = checkAuthorsRepository.findById(cmd.getAuthorId())
+                .map(CheckAuthors::getNickname)
+                .orElse(null);
+        cmd.setAuthorNickname(nickname);
+
         Drafts draft = new Drafts();
         draft.saveDraft(cmd);
 

@@ -21,6 +21,7 @@ public class CheckAuthorsViewHandler {
             if (!authorshipAccepted.validate()) return;
 
             CheckAuthors checkAuthors = new CheckAuthors();
+            checkAuthors.setId(authorshipAccepted.getId());
             checkAuthors.setNickname(authorshipAccepted.getNickname());
 
             checkAuthorsRepository.save(checkAuthors);
