@@ -14,14 +14,14 @@ public class SubscriptionController {
     private final UsersRepository userRepo;
     @GetMapping public ResponseEntity<Subscription> getMySub(
         @AuthenticationPrincipal UserPrincipal p){
-        var u=userRepo.findByEmail(p.getUsername()).orElseThrow();
+        var u=userRepo.findByAccountId(p.getUsername()).orElseThrow();
         var s=subRepo.findByUserId(u.getId()).orElseThrow();
         return ResponseEntity.ok(s);
     }
     @PostMapping("/start") public ResponseEntity<Subscription> startSub(
         @AuthenticationPrincipal UserPrincipal p,
         @RequestBody StartSubscriptionRequest req){
-        var u=userRepo.findByEmail(p.getUsername()).orElseThrow();
+        var u=userRepo.findByAccountId(p.getUsername()).orElseThrow();
         var s=Subscription.builder().user(u).plan(req.getPlan())
             .expiresAt(req.calculateExpiry()).build();
         return ResponseEntity.ok(subRepo.save(s));
