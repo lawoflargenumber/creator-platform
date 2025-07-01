@@ -5,9 +5,9 @@ spring:
   application:
     name: ai
 ---
-
 spring:
-  profiles: default
+  profiles:
+    active: local
   jpa:
     properties:
       hibernate:

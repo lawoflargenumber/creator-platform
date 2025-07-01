@@ -45,11 +45,10 @@ logging:
     org.hibernate.type: trace
     org.springframework.cloud: debug
 
+---
 
 server:
   port: 8082
-
----
 
 spring:
   profiles: docker
@@ -63,7 +62,7 @@ spring:
     stream:
       kafka:
         binder:
-          brokers: my-kafka:9092
+          brokers: my-kafka:29092
         streams:
           binder:
             configuration:
@@ -82,3 +81,8 @@ spring:
           contentType: application/json
 
 
+
+jwt:
+  secret: JwtSecretKey1234567890
+  expirationMs: 900000
+  refreshExpirationMs: 604800000
