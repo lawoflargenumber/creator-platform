@@ -35,6 +35,6 @@ public class PolicyHandler {
     public void onCompletedPublication(@Payload CompletedPublication event) {
         log.info("✅ CompletedPublication received: {}", event);
         draftsRepository.findById(event.getDraftId())
-                        .ifPresent(draftsRepository::delete);
-    }
+                    .ifPresent(draftsRepository::delete);
+    }  
 }
