@@ -17,7 +17,7 @@ import java.util.HashMap;
 //<<< Clean Arch / Inbound Adaptor
 
 @RestController
-// @RequestMapping(value="/userAccessProfiles")
+@RequestMapping(value="/view")
 @Transactional
 public class UserAccessProfileController {
 
@@ -46,7 +46,7 @@ public class UserAccessProfileController {
     */
 
     // 책 읽기 접근 권한 확인
-    @GetMapping("/view/{id}/accesstocontent")
+    @GetMapping("/{id}/accesstocontent")
     public ResponseEntity<Map<String, Object>> accessToContent(
         @PathVariable Long id,
         @RequestParam Long productId
@@ -64,7 +64,7 @@ public class UserAccessProfileController {
     }
 
     // 포인트 구매 가능 여부 확인
-    @GetMapping("/view/{id}/checkpurchaseability")
+    @GetMapping("/{id}/checkpurchaseability")
     public ResponseEntity<Map<String, Object>> checkPurchaseability(
         @PathVariable Long id,
         @RequestParam Long productId
@@ -81,7 +81,7 @@ public class UserAccessProfileController {
     }
 
     // 포인트로 구매 실행
-    @PostMapping("/view/{id}/purchasewithpoints")
+    @PostMapping("/{id}/purchasewithpoints")
     public ResponseEntity<Map<String, Object>> purchaseWithPoints(
         @PathVariable Long id,
         @RequestParam Long productId
