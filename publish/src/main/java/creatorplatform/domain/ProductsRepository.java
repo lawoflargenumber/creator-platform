@@ -12,4 +12,7 @@ public interface ProductsRepository extends PagingAndSortingRepository<Products,
 
     List<Products> findByIsBestsellerTrueOrderByViewsDesc();
 
+    List<Products> findAllByOrderByIsBestsellerDescPublishedAtDesc();
+
+
 }

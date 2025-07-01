@@ -127,6 +127,24 @@ public class ProductsController {
         );
     }
 
+    @GetMapping("/products/all")
+    public List<ProductSummaryDto> getAllProductsSorted() {
+        List<Products> productsList = productsRepository.findAllByOrderByIsBestsellerDescPublishedAtDesc();
+
+        return productsList.stream()
+            .map(p -> new ProductSummaryDto(
+                p.getId(),
+                p.getCoverImageUrl(),
+                p.getCategory(),
+                p.getAuthorNickname(),
+                p.getTitle(),
+                p.getPublishedAt(),
+                p.getIsBestseller()
+            ))
+            .toList();
+    }
+
+
 
 
 
