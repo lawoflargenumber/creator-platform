@@ -6,6 +6,8 @@ import creatorplatform.WritingApplication;
 import javax.persistence.*;
 import java.util.Date;
 import lombok.Data;
+import javax.persistence.Enumerated;
+import javax.persistence.EnumType;
 
 
 
@@ -14,7 +16,7 @@ import lombok.Data;
 @Data
 // <<< DDD / Aggregate Root
 public class Drafts {
-
+    public enum Status { DRAFT, REQUESTED, PUBLISHED }
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -23,6 +25,9 @@ public class Drafts {
     private String authorNickname;
     private String title;
     private String content;
+    /* ✅ 추가 */  
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.DRAFT;  // 기본값  // ← status를 실제 필드로 보유해야 this.status 사용 가능
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
@@ -52,20 +57,23 @@ public class Drafts {
         this.content = cmd.getContent();
         this.createdAt = new Date();
         this.lastUpdatedAt = new Date();
-
+        this.status         = Status.DRAFT;
         // 3) Publish domain event
         DraftSaved draftSaved = new DraftSaved(this);
         draftSaved.publishAfterCommit();
     }
 
-    public void requestPublication(RequestPublicationCommand cmd) {
-        // Example: mark status, set last updated timestamp, etc.
+    public void requestPublication(){
+        if(this.status != Status.DRAFT)
+            throw new IllegalStateException("이미 요청됨/발행됨");
+
+        this.status        = Status.REQUESTED;
         this.lastUpdatedAt = new Date();
 
-        RequestedPublication requestedPublication = new RequestedPublication(this);
-        requestedPublication.publishAfterCommit();
+        new RequestedPublication(this).publishAfterCommit();
     }
 
+  
     /* =========================================================
      * Policy handler – react to CompletedPublication event
      * ========================================================= */

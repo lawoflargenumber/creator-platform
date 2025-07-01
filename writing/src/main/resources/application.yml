@@ -1,4 +1,4 @@
-# 공통 설정
+# // creator-platform/writing/src/main/resources/application.yml
 server:
   port: 8080            # 로컬 기본 포트
 
@@ -55,11 +55,11 @@ spring:
     stream:
       kafka:
         binder:
-          brokers: my-kafka:9092
+          brokers: my-kafka:29092
       bindings:
         event-in:
           group: writing
-          destination: creatorplatform
+          destination: creatorplatform.completed-publication
           contentType: application/json
         event-out:
           destination: creatorplatform

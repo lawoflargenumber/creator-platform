@@ -1,3 +1,5 @@
+//completed_publication.java
+// creator-platform/writing/src/main/java/creatorplatform/domain/CompletedPublication.java
 package creatorplatform.domain;
 
 import creatorplatform.infra.AbstractEvent;

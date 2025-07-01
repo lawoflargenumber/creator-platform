@@ -1,3 +1,5 @@
+//drafts
+// creator-platform/writing/src/main/java/creatorplatform/infra/DraftsHateoasProcessor
 package creatorplatform.infra;
 
 import creatorplatform.domain.*;

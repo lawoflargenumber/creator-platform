@@ -1,3 +1,5 @@
+//policy handler
+// creator-platform/writing/src/main/java/creatorplatform/infra/PolicyHandler.java
 package creatorplatform.infra;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -30,13 +32,9 @@ public class PolicyHandler {
     public void wheneverCompletedPublication_DeleteDraft(
         @Payload CompletedPublication completedPublication
     ) {
-        CompletedPublication event = completedPublication;
-        System.out.println(
-            "\n\n##### listener DeleteDraft : " + completedPublication + "\n\n"
-        );
+        System.out.println("✅ CompletedPublication received: " + completedPublication);
+        Drafts.deleteDraft(completedPublication);
+    }       
 
-        // Sample Logic //
-        Drafts.deleteDraft(event);
-    }
 }
 //>>> Clean Arch / Inbound Adaptor
