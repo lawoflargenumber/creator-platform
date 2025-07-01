@@ -12,10 +12,12 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.MimeTypeUtils;
-private static final Logger log = LoggerFactory.getLogger(AbstractEvent.class);
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 //<<< Clean Arch / Outbound Adaptor
 public class AbstractEvent {
-
+    private static final Logger log = LoggerFactory.getLogger(AbstractEvent.class);
     String eventType;
     Long timestamp;
 
@@ -87,4 +89,5 @@ public class AbstractEvent {
         return json;
     }
 }
+
 //>>> Clean Arch / Outbound Adaptor
