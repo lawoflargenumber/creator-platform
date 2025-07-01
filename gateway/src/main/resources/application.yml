@@ -68,7 +68,11 @@ spring:
         - id: view
           uri: http://view:8085
           predicates:
-            - Path=/view/**, /viewHistories/**
+            - Path=/view/**
+        - id: viewhistories
+          uri: http://view:8085
+          predicates:
+            - Path=/viewHistories/**
         - id: ai
           uri: http://ai:8086
           predicates:
