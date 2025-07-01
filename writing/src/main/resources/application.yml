@@ -1,12 +1,12 @@
 # // creator-platform/writing/src/main/resources/application.yml
 server:
-  port: 8080            # 로컬 기본 포트
+  port: 8080
 
 spring:
   application:
     name: writing
 
-# -------- default 프로필 (로컬 개발) --------
+# -------- default --------
 ---
 spring:
   profiles: default
@@ -27,20 +27,20 @@ spring:
         event-in:
           group: writing
           destination: creatorplatform
-          contentType: application/json
+          content-type: application/json
         event-out:
           destination: creatorplatform
-          contentType: application/json
+          content-type: application/json
 
 authors:
-  url: http://localhost:8081   # 임시 계정 서비스 주소
+  url: http://localhost:8081
 
 logging:
   level:
     org.hibernate.type: trace
     org.springframework.cloud: debug
 
-# -------- docker 프로필 --------
+# -------- docker --------
 ---
 spring:
   profiles: docker
@@ -60,10 +60,10 @@ spring:
         event-in:
           group: writing
           destination: creatorplatform.completed-publication
-          contentType: application/json
+          content-type: application/json   # ✅ kebab-case
         event-out:
           destination: creatorplatform
-          contentType: application/json
+          content-type: application/json
 
 authors:
-  url: http://account:8081     # 도커 네트워크상의 계정 MS
+  url: http://account:8081

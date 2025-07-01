@@ -1,12 +1,14 @@
 version: '2'
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:latest
+    image: confluentinc/cp-zookeeper:7.4.0   # ✅ zookeeper 전용 이미지
+    container_name: zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     ports:
       - 2181:2181
+
   kafka:
     image: confluentinc/cp-kafka:7.4.0
     container_name: my-kafka
@@ -17,82 +19,11 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://my-kafka:29092,PLAINTEXT_HOST://my-kafka:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://my-kafka:29092,PLAINTEXT_HOST://localhost:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
- 
-  account:
-    depends_on: 
-      - kafka
-    image: adoptopenjdk/maven-openjdk11:latest
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-    command: mvn spring-boot:run
-    ports:
-      - 8082:8082
-    working_dir: /usr/src
-    volumes:
-      - ./account:/usr/src
-      - ./maven-repo:/root/.m2
-      
-  writing:
-    depends_on: 
-      - kafka
-      - mysql
-    image: adoptopenjdk/maven-openjdk11:latest
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-    command: mvn spring-boot:run
-    ports:
-      - 8083:8080
-    working_dir: /usr/src
-    volumes:
-      - ./writing:/usr/src
-      - ./maven-repo:/root/.m2
-      
-  publish:
-    depends_on: 
-      - kafka
-    image: adoptopenjdk/maven-openjdk11:latest
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-    command: mvn spring-boot:run
-    ports:
-      - 8084:8084
-    working_dir: /usr/src
-    volumes:
-      - ./publish:/usr/src
-      - ./maven-repo:/root/.m2
-      
-  view:
-    depends_on: 
-      - kafka
-    image: adoptopenjdk/maven-openjdk11:latest
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-    command: mvn spring-boot:run
-    ports:
-      - 8085:8085
-    working_dir: /usr/src
-    volumes:
-      - ./view:/usr/src
-      - ./maven-repo:/root/.m2
-      
-  ai:
-    depends_on: 
-      - kafka
-    image: adoptopenjdk/maven-openjdk11:latest
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-    command: mvn spring-boot:run
-    ports:
-      - 8086:8086
-    working_dir: /usr/src
-    volumes:
-      - ./ai:/usr/src
-      - ./maven-repo:/root/.m2
 
   mysql:
     image: mysql:8
@@ -107,4 +38,76 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-   
+
+  writing:
+    image: adoptopenjdk/maven-openjdk11:latest
+    container_name: writing
+    depends_on:
+      - kafka
+      - mysql
+    working_dir: /usr/src
+    volumes:
+      - ./writing:/usr/src
+      - ./maven-repo:/root/.m2
+    command: mvn spring-boot:run
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8083:8080"
+
+
+  account:
+    image: adoptopenjdk/maven-openjdk11:latest
+    depends_on:
+      - kafka
+    working_dir: /usr/src
+    volumes:
+      - ./account:/usr/src
+      - ./maven-repo:/root/.m2
+    command: mvn spring-boot:run
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8082:8082"
+
+  publish:
+    image: adoptopenjdk/maven-openjdk11:latest
+    depends_on:
+      - kafka
+    working_dir: /usr/src
+    volumes:
+      - ./publish:/usr/src
+      - ./maven-repo:/root/.m2
+    command: mvn spring-boot:run
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8084:8084"
+
+  view:
+    image: adoptopenjdk/maven-openjdk11:latest
+    depends_on:
+      - kafka
+    working_dir: /usr/src
+    volumes:
+      - ./view:/usr/src
+      - ./maven-repo:/root/.m2
+    command: mvn spring-boot:run
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8085:8085"
+
+  ai:
+    image: adoptopenjdk/maven-openjdk11:latest
+    depends_on:
+      - kafka
+    working_dir: /usr/src
+    volumes:
+      - ./ai:/usr/src
+      - ./maven-repo:/root/.m2
+    command: mvn spring-boot:run
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8086:8086"

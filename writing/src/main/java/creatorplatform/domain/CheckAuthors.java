@@ -1,8 +1,5 @@
 package creatorplatform.domain;
 
-import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
 import javax.persistence.*;
 import lombok.Data;
 
@@ -13,7 +10,7 @@ import lombok.Data;
 public class CheckAuthors {
 
     @Id
-    //@GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)  // ✅ ID 자동 생성
     private Long id;
 
     private String nickname;
