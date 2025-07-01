@@ -64,16 +64,17 @@ public class AiAdapter implements AiGeneratorPort {
         HttpHeaders headers = createHeaders();
 
         Map<String, Object> requestBody = Map.of(
-                "model", "dall-e-2",
+                "model", "gpt-image-1",
                 "prompt", imagePrompt,
                 "n", 1,
-                "size", "512x512"
+                "size", "1024x1536",
+                "quality", "medium"
         );
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
-        System.out.println(">>> Sending request to DALL-E API...");
+        System.out.println(">>> Sending request to image API...");
         ResponseEntity<String> response = restTemplate.postForEntity(DALLE_API_URL, entity, String.class);
-        System.out.println("<<< Received response from DALL-E API.");
+        System.out.println("<<< Received response from image API.");
 
         return parseDalleResponse(response.getBody());
     }

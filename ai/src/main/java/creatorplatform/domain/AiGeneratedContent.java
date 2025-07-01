@@ -1,7 +1,5 @@
 package creatorplatform.domain;
 
-import creatorplatform.AiApplication;
-
 import javax.persistence.*;
 
 import lombok.Getter;
@@ -56,8 +54,8 @@ public class AiGeneratedContent {
     public void completeGeneration() {
         this.status = ProcessingStatus.COMPLETED;
 
-        CompletedGeneration completedGeneration = new CompletedGeneration(this);
-        completedGeneration.publishAfterCommit();
+        GenerationCompleted generationCompleted = new GenerationCompleted(this);
+        generationCompleted.publishAfterCommit();
     }
 }
 //>>> DDD / Aggregate Root
