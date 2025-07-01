@@ -4,92 +4,88 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import creatorplatform.domain.Category;
 import creatorplatform.domain.port.AiGeneratorPort;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import lombok.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.List;
+import org.springframework.http.*;
+import org.springframework.beans.factory.annotation.Value;
 import java.util.Map;
 
 @Component
 public class AiAdapter implements AiGeneratorPort {
-    private static final Logger log = LoggerFactory.getLogger(AiAdapterGPT.class);
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Value("${gemini.api.key}")
+    @Value("${openai.api.key}")
     private String apiKey;
 
-    // Gemini API 엔드포인트 URL (gemini-1.5-flash 모델 사용)
-    private static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
+    private static final String GPT_API_URL = "https://api.openai.com/v1/chat/completions";
+    private static final String DALLE_API_URL = "https://api.openai.com/v1/images/generations";
 
     @Override
     public AiGeneratedResult generate(String title, String content) {
-        String originalText = "## 제목:\n" + title + "\n\n## 내용:\n" + content;
-        return this.processAiGeneration(originalText, "");
+        return this.processAiGeneration("## 제목:\n" + title + "\n\n## 내용:\n" + content, "");
     }
 
     @Override
     public AiGeneratedResult regenerate(String title, String content, String userPrompt) {
-        String originalText = "## 제목:\n" + title + "\n\n## 내용:\n" + content;
-        return this.processAiGeneration(originalText, userPrompt);
+        return this.processAiGeneration("## 제목:\n" + title + "\n\n## 내용:\n" + content, userPrompt);
     }
 
     private AiGeneratedResult processAiGeneration(String originalText, String userPrompt) {
-        // 1. Gemini 텍스트 생성
-        String gptResultJson = generateGeminiText(originalText, userPrompt);
-        GptTextResult gptResult = parseGeminiResponse(gptResultJson);
-
-        // 2. 이미지 URL 생성 (더미 데이터)
-        String imageUrl = createImagePlaceholderUrl(gptResult.getSummary());
+        GptTextResult gptResult = generateTextualContent(originalText, userPrompt);
+        String imagePrompt = createImagePromptFrom(gptResult.getSummary());
+        String imageUrl = generateImage(imagePrompt);
 
         Category categoryEnum = Category.fromDisplayName(gptResult.getCategory());
 
         return new AiGeneratedResult(gptResult.getSummary(), categoryEnum, gptResult.getPrice(), imageUrl);
     }
 
-    private String generateGeminiText(String originalText, String userPrompt) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+    private GptTextResult generateTextualContent(String originalText, String userPrompt) {
+        HttpHeaders headers = createHeaders();
 
-        String prompt = createGeminiPrompt(originalText, userPrompt);
-
-        // Gemini API 요청 본문 구조
+        String gptPrompt = createGptPrompt(originalText, userPrompt);
         Map<String, Object> requestBody = Map.of(
-                "contents", List.of(
-                        Map.of("parts", List.of(
-                                Map.of("text", prompt)
-                        ))
-                ),
-                "generationConfig", Map.of(
-                        "responseMimeType", "application/json"
-                )
+                "model", "gpt-4o-mini",
+                "messages", new Object[]{ Map.of("role", "user", "content", gptPrompt) },
+                "response_format", Map.of("type", "json_object")
         );
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
-        String urlWithKey = GEMINI_API_URL + "?key=" + apiKey;
+        System.out.println(">>> Sending request to GPT API...");
+        ResponseEntity<String> response = restTemplate.postForEntity(GPT_API_URL, entity, String.class);
+        System.out.println("<<< Received response from GPT API.");
 
-        log.info(">>> Sending request to Gemini API...");
-        String response = restTemplate.postForObject(urlWithKey, entity, String.class);
-        log.info("<<< Received response from Gemini API.");
-        return response;
+        return parseGptResponse(response.getBody());
     }
 
-    // DALL-E 호출 대신 예시 URL을 생성하는 메서드
-    private String createImagePlaceholderUrl(String seedText) {
-        return "https://picsum.photos/seed/" + seedText.hashCode() + "/512/512";
+    private String generateImage(String imagePrompt) {
+        HttpHeaders headers = createHeaders();
+
+        Map<String, Object> requestBody = Map.of(
+                "model", "dall-e-2",
+                "prompt", imagePrompt,
+                "n", 1,
+                "size", "512x512"
+        );
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+
+        System.out.println(">>> Sending request to DALL-E API...");
+        ResponseEntity<String> response = restTemplate.postForEntity(DALLE_API_URL, entity, String.class);
+        System.out.println("<<< Received response from DALL-E API.");
+
+        return parseDalleResponse(response.getBody());
     }
 
-    private String createGeminiPrompt(String originalText, String userPrompt) {
-        // AI가 응답할 카테고리 목록을 한글로 제시 (Category Enum의 fromDisplayName과 매칭)
+    private HttpHeaders createHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(apiKey);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return headers;
+    }
+
+    private String createGptPrompt(String originalText, String userPrompt) {
         String categories = "\"문학\", \"경제\", \"자기계발\", \"라이프스타일\", \"기타\"";
 
         return String.format(
@@ -99,7 +95,7 @@ public class AiAdapter implements AiGeneratorPort {
                         "2. 'category': 반드시 다음 5가지 카테고리 중 가장 적합한 하나를 선택: [%s].\n" +
                         "3. 'price': 1에서 500 사이의 정수. 아래 '가격 책정 기준'을 참고하여 책정.\n\n" +
                         "### 가격 책정 기준:\n" +
-                        "- 글의 분량 및 깊이: 글이 길고 심도 깊은 내용을 다룰수록 높은 가격.\n\n" +
+                        "- 글의 분량 및 깊이: 글이 길고 심도 깊은 내용을 다룰수록 높은 가격.\n" +
                         "--- 원본 텍스트 ---\n" +
                         "%s\n\n" +
                         "--- 추가적인 요청사항 ---\n" +
@@ -108,40 +104,48 @@ public class AiAdapter implements AiGeneratorPort {
         );
     }
 
-    private GptTextResult parseGeminiResponse(String jsonResponse) {
-        ObjectMapper objectMapper = new ObjectMapper();
+    private String createImagePromptFrom(String summary) {
+        return String.format(
+                "다음 글의 요약을 읽으시고 책의 커버 이미지를 생성해주세요: \n%s", summary
+        );
+    }
+
+    private GptTextResult parseGptResponse(String jsonResponse) {
         try {
+            ObjectMapper objectMapper = new ObjectMapper();
             JsonNode rootNode = objectMapper.readTree(jsonResponse);
 
-            // Gemini 응답 구조에 맞게 파싱 경로 수정
-            JsonNode textNode = rootNode.path("candidates").get(0).path("content").path("parts").get(0).path("text");
-
-            if (textNode.isMissingNode()) {
-                log.error("Gemini response is missing 'text' field. Response: {}", jsonResponse);
-                throw new RuntimeException("Failed to parse Gemini response: 'text' field is missing.");
-            }
-
-            // AI가 응답한 JSON 문자열을 다시 파싱
-            JsonNode contentNode = objectMapper.readTree(textNode.asText());
+            String contentJson = rootNode.path("choices").get(0).path("message").path("content").asText();
+            JsonNode contentNode = objectMapper.readTree(contentJson);
 
             String summary = contentNode.path("summary").asText();
             String category = contentNode.path("category").asText();
             Integer price = contentNode.path("price").asInt();
 
             return new GptTextResult(summary, category, price);
-
         } catch (Exception e) {
-            log.error("Failed to parse Gemini JSON response. Response: {}", jsonResponse, e);
-            throw new RuntimeException("Failed to parse Gemini response.", e);
+            throw new RuntimeException("Failed to parse GPT response", e);
         }
     }
 
-    @RequiredArgsConstructor
+    private String parseDalleResponse(String jsonResponse) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode rootNode = objectMapper.readTree(jsonResponse);
+
+            return rootNode.path("data").get(0).path("url").asText();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse DALL-E response", e);
+        }
+    }
+
+    @AllArgsConstructor
     @Getter
     @ToString
-    private static class GptTextResult {
+    public static class GptTextResult {
         private final String summary;
         private final String category;
         private final Integer price;
     }
+
 }
