@@ -19,7 +19,7 @@
 		<spring-cloud.version>Hoxton.SR12</spring-cloud.version>
 		<spring-cloud-stream.version>Germantown.SR1</spring-cloud-stream.version>
 		<cucumber.version>6.8.1</cucumber.version>
-	</properties>
+	</properties> 
 
 	<dependencies>
 		<dependency>
@@ -38,6 +38,11 @@
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+  			<artifactId>mysql-connector-java</artifactId>
+  			<scope>runtime</scope>
 		</dependency>
       <!-- lombok -->
 		<dependency>
@@ -70,7 +75,7 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-
+		
 		<!-- cucumber test -->
 		<dependency>
 			<groupId>io.cucumber</groupId>

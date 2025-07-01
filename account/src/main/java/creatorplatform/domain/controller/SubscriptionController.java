@@ -1,7 +1,7 @@
 package creatorplatform.domain.controller;
 import creatorplatform.domain.model.Subscription;
 import creatorplatform.domain.repository.SubscriptionRepository;
-import creatorplatform.domain.repository.UserRepository;
+import creatorplatform.domain.UsersRepository;
 import creatorplatform.domain.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController @RequestMapping("/users/me/subscription") @RequiredArgsConstructor
 public class SubscriptionController {
     private final SubscriptionRepository subRepo;
-    private final UserRepository userRepo;
+    private final UsersRepository userRepo;
     @GetMapping public ResponseEntity<Subscription> getMySub(
         @AuthenticationPrincipal UserPrincipal p){
         var u=userRepo.findByEmail(p.getUsername()).orElseThrow();

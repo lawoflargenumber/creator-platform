@@ -1,3 +1,4 @@
+//RequestPublicationCommand.java
 package creatorplatform.domain;
 
 import java.time.LocalDate;
