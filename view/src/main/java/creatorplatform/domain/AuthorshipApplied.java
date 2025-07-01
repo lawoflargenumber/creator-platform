@@ -8,5 +8,5 @@ import lombok.*;
 @ToString
 public class AuthorshipApplied extends AbstractEvent {
     private Long id;
-    private String authorsProfile;
+    private String authorshipStatus;
 } 
