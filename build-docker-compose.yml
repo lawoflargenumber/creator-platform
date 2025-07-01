@@ -106,8 +106,18 @@ services:
     volumes:
       - ./ai:/usr/src
       - ./maven-repo:/root/.m2
-    command: mvn spring-boot:run
+      
+  gateway:
+    depends_on: 
+      - kafka
+    image: adoptopenjdk/maven-openjdk11:latest
     environment:
-      SPRING_PROFILES_ACTIVE: docker
+      - SPRING_PROFILES_ACTIVE=docker
+    command: mvn spring-boot:run
     ports:
-      - "8086:8086"
+      - 8080:8080
+    working_dir: /usr/src
+    volumes:
+      - ./gateway:/usr/src
+      - ./maven-repo:/root/.m2
+      

@@ -38,7 +38,7 @@ public class Products {
 
     private Date publishedAt;
 
-    private Integer views;
+    private Integer views = 0; // 기본값 0으로 설정, null 방지 
 
     private String coverImageUrl;
 
@@ -64,7 +64,12 @@ public class Products {
 
     //<<< Clean Arch / Port Method
     public void trackView(TrackViewCommand trackViewCommand) {
-        //implement business logic here:
+        this.views += 1;  
+
+        ViewTracked viewTracked = new ViewTracked(this);
+        viewTracked.setUserId(trackViewCommand.getUserId());
+        viewTracked.setCreatedAt(new Date());
+        viewTracked.publishAfterCommit();
 
     }
     //>>> Clean Arch / Port Method

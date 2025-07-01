@@ -1,3 +1,16 @@
+# API-Key 관련 
+ai 디렉토리에는 Application-local.yml 이 .gitignore에 등록되어있습니다. 
+
+ai/src/main/java/resource에 Application-local.yml 을 만들고 아래 형식으로 api-key를 저장해주세요 
+
+```
+openai:
+
+  api:
+  
+    key: "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+```
+---
 # ai
 
 ## Running in local development environment

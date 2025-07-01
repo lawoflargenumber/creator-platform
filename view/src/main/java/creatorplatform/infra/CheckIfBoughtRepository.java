@@ -10,4 +10,8 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
     path = "checkIfBoughts"
 )
 public interface CheckIfBoughtRepository
-    extends PagingAndSortingRepository<CheckIfBought, Long> {}
+    extends PagingAndSortingRepository<CheckIfBought, Long> {
+    
+    // Spring Data JPA method naming convention
+    boolean existsByIdAndProductId(Long id, Long productId);
+}
