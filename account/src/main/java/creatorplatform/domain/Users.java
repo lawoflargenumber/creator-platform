@@ -48,10 +48,6 @@ public class Users {
     //<<< Clean Arch / Port Method
     public void registerUser(RegisterUserCommand registerUserCommand) {
         //implement business logic here:
-        // 테스트를 위해 간단히 추가한 사용자 등록 로직, 나중에 주석 처리
-        this.setNickname(registerUserCommand.getNickname());
-        this.setPassword(registerUserCommand.getPassword());
-        this.setCreatedAt(new Date());
 
         UserRegistered userRegistered = new UserRegistered(this);
         userRegistered.publishAfterCommit();
@@ -78,8 +74,6 @@ public class Users {
     //>>> Clean Arch / Port Method
     //<<< Clean Arch / Port Method
     public void startSubscribe() {
-        // 테스트를 위해 간단히 추가한 구독 시작 로직
-        this.setSubscriber(true);
 
         SubscriptionStarted subscriptionStarted = new SubscriptionStarted(this);
         subscriptionStarted.publishAfterCommit();
