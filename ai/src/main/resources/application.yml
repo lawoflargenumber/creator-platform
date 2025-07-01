@@ -45,6 +45,10 @@ logging:
     org.hibernate.type: trace
     org.springframework.cloud: debug
 
+openai:
+  api:
+    key: dummy-key-for-testing
+
 api:
   url: 
     view: localhost:8086 
@@ -83,5 +87,9 @@ spring:
         event-out:
           destination: creatorplatform
           contentType: application/json
+
+openai:
+  api:
+    key: dummy-key-for-testing
 
 

@@ -40,36 +40,7 @@ logging:
     org.hibernate.type: trace
     org.springframework.cloud: debug
 
--------- docker --------
-# ---
-# server:
-#   port: 8081
-
-# spring:
-#   profiles: docker
-#   datasource:
-#     url: jdbc:mysql://mysql:3306/writing
-#     username: root
-#     password: root
-#   jpa:
-#     hibernate:
-#       ddl-auto: update
-#   cloud:
-#     stream:
-#       kafka:
-#         binder:
-#           brokers: my-kafka:29092
-#       bindings:
-#         event-in:
-#           group: writing
-#           destination: creatorplatform.completed-publication
-#           content-type: application/json   # ✅ kebab-case
-#         event-out:
-#           destination: creatorplatform
-#           content-type: application/json
-
-# authors:
-#   url: http://account:8081
+---
 
 server:
   port: 8081
