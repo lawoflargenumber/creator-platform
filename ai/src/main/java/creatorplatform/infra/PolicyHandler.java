@@ -51,6 +51,8 @@ public class PolicyHandler {
 
             AiGeneratedContent process = new AiGeneratedContent();
             process.setId(requestedPublication.getDraftId());
+            process.setAuthorId(requestedPublication.getAuthorId());
+            process.setAuthorNickname(requestedPublication.getAuthorNickname());
             process.setTitle(requestedPublication.getTitle());
             process.setContent(requestedPublication.getContent());
             process.setStatus(ProcessingStatus.PENDING);
