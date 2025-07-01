@@ -15,12 +15,16 @@ import lombok.*;
 public class RequestedPublication extends AbstractEvent {
     private Long draftId;       // 이벤트 소비자가 바로 쓰도록 필드명 변경
     private Long authorId;
+    private String authorNickname;
     private String title;
+    private String content;
 
     public RequestedPublication(Drafts d){
         super(d);
         this.draftId  = d.getId();
         this.authorId = d.getAuthorId();
+        this.authorNickname = d.getAuthorNickname();
         this.title    = d.getTitle();
+        this.content = d.getContent();
     }
 }

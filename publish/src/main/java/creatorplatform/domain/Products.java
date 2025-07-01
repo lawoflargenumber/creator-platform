@@ -30,6 +30,7 @@ public class Products {
 
     private String title;
 
+    @Lob
     private String content;
 
     private String category;
@@ -40,8 +41,10 @@ public class Products {
 
     private Integer views = 0; // 기본값 0으로 설정, null 방지 
 
+    @Lob
     private String coverImageUrl;
 
+    @Lob
     private String summary;
 
     private Boolean isBestseller = false;
