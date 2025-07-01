@@ -39,5 +39,4 @@ public class AuthController {
         User saved = userRepo.save(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
-    // 기존 로그인, refresh, logout 메서드...
 }
