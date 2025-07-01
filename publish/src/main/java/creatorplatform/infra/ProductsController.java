@@ -18,20 +18,15 @@ import org.springframework.web.bind.annotation.RestController;
 @Transactional
 public class ProductsController {
 
-    @Autowired
-    ProductsRepository productsRepository;
-
     @RequestMapping(
         value = "/products/{id}/trackview",
         method = RequestMethod.PUT,
         produces = "application/json;charset=UTF-8"
     )
-    public Products trackView(
+    public void trackView(
         @PathVariable(value = "id") Long id,
-        @RequestBody TrackViewCommand trackViewCommand,
-        HttpServletRequest request,
-        HttpServletResponse response
-    ) throws Exception {
+        @RequestBody TrackViewCommand trackViewCommand
+)   throws Exception {
         System.out.println("##### /products/trackView  called #####");
         Optional<Products> optionalProducts = productsRepository.findById(id);
 
@@ -40,8 +35,8 @@ public class ProductsController {
         products.trackView(trackViewCommand);
 
         productsRepository.save(products);
-        return products;
     }
+
 
     // 출간 요청 처리 (POST /products)
     @PostMapping("/products")
