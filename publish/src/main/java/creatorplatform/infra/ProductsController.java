@@ -3,20 +3,19 @@ package creatorplatform.infra;
 import creatorplatform.domain.*;
 import java.util.List;
 import java.util.Optional;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 //<<< Clean Arch / Inbound Adaptor
 
 @RestController
-// @RequestMapping(value="/products")
 @Transactional
 public class ProductsController {
+
+    @Autowired
+    private ProductsRepository productsRepository;
 
     @RequestMapping(
         value = "/products/{id}/trackview",
@@ -26,12 +25,11 @@ public class ProductsController {
     public void trackView(
         @PathVariable(value = "id") Long id,
         @RequestBody TrackViewCommand trackViewCommand
-)   throws Exception {
-        System.out.println("##### /products/trackView  called #####");
+    ) throws Exception {
+        System.out.println("##### /products/trackView called #####");
         Optional<Products> optionalProducts = productsRepository.findById(id);
 
-        optionalProducts.orElseThrow(() -> new Exception("No Entity Found"));
-        Products products = optionalProducts.get();
+        Products products = optionalProducts.orElseThrow(() -> new Exception("No Entity Found"));
         products.trackView(trackViewCommand);
 
         productsRepository.save(products);
@@ -62,7 +60,6 @@ public class ProductsController {
         return getProductsByCategory("기타");
     }
 
-    // 공통 로직
     private List<ProductSummaryDto> getProductsByCategory(String category) {
         List<Products> productsList = productsRepository.findByCategory(category);
         return productsList.stream()
@@ -75,9 +72,8 @@ public class ProductsController {
                 p.getPublishedAt(),
                 p.getIsBestseller()
             ))
-            .toList();
+            .collect(Collectors.toList());
     }
-
 
     @GetMapping("/products/bestsellers")
     public List<ProductSummaryDto> getBestSellers() {
@@ -89,11 +85,10 @@ public class ProductsController {
                 p.getAuthorNickname(),
                 p.getTitle(),
                 p.getPublishedAt(),
-                p.getIsBestseller() 
+                p.getIsBestseller()
             ))
-            .toList();
+            .collect(Collectors.toList());
     }
-
 
     @GetMapping("/products/{id}")
     public ProductDetailDto getProductDetail(@PathVariable Long id) throws Exception {
@@ -130,7 +125,6 @@ public class ProductsController {
     @GetMapping("/products/all")
     public List<ProductSummaryDto> getAllProductsSorted() {
         List<Products> productsList = productsRepository.findAllByOrderByIsBestsellerDescPublishedAtDesc();
-
         return productsList.stream()
             .map(p -> new ProductSummaryDto(
                 p.getId(),
@@ -141,13 +135,8 @@ public class ProductsController {
                 p.getPublishedAt(),
                 p.getIsBestseller()
             ))
-            .toList();
+            .collect(Collectors.toList());
     }
-
-
-
-
-
-
 }
 //>>> Clean Arch / Inbound Adaptor
+ㅊㅇ
