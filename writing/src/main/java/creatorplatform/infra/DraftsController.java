@@ -44,15 +44,18 @@ public class DraftsController {
         Drafts draft = new Drafts();
         draft.saveDraft(cmd);
 
-        // 1️⃣ 먼저 저장해서 id 생성
-        draft = repo.save(draft);
+        // 1️⃣ DB에 먼저 저장 (id 생성)
+        Drafts saved = repo.save(draft);
 
-        // 2️⃣ 이제 id 있는 상태로 출판 요청
-        draft.requestPublication();
+        // 2️⃣ ID가 생성된 draft로 출판 요청
+        saved.requestPublication();
 
         // 3️⃣ 상태 변경된 draft 다시 저장
-        return repo.save(draft);
+        Drafts published = repo.save(saved);
+
+        return published;
     }
+
 
     // ---------- 전체 목록 조회 ----------
     @GetMapping
