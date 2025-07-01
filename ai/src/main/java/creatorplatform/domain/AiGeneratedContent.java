@@ -23,8 +23,8 @@ public class AiGeneratedContent {
     private String content;
     private String summary;
     private Integer price;
+    @Lob
     private String coverImageUrl;
-
     @Enumerated(EnumType.STRING)
     private Category category;
 
