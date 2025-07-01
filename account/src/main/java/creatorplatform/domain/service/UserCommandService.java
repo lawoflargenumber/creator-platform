@@ -20,7 +20,7 @@ public class UserCommandService {
         user.setAccountId(cmd.id);
         user.setNickname(cmd.nickname);
         user.setPassword(cmd.password);
-        user.setAuthorshipStatus("PENDING");
+        user.setAuthorshipStatus("DEFAULT");
         user.setSubscriber(false);
         user.setAgreedToMarketing(cmd.agreedToMarketing);
         usersRepository.save(user);
