@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class CompletedGeneration extends AbstractEvent {
+public class GenerationCompleted extends AbstractEvent {
     private Long id;
     private Long authorId;
     private String authorNickname;
@@ -17,11 +17,11 @@ public class CompletedGeneration extends AbstractEvent {
     private String coverImageUrl;
     private Category category;
 
-    public CompletedGeneration(AiGeneratedContent aggregate) {
+    public GenerationCompleted(AiGeneratedContent aggregate) {
         super(aggregate);
     }
 
-    public CompletedGeneration() {
+    public GenerationCompleted() {
         super();
     }
 }
