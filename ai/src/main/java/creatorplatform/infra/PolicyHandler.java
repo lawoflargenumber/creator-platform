@@ -44,11 +44,6 @@ public class PolicyHandler {
         }
 
         try {
-            AiGeneratorPort.AiGeneratedResult aiResult = aiGenerator.generate(
-                    requestedPublication.getTitle(),
-                    requestedPublication.getContent()
-            );
-
             AiGeneratedContent process = new AiGeneratedContent();
             process.setId(requestedPublication.getDraftId());
             process.setAuthorId(requestedPublication.getAuthorId());
@@ -56,6 +51,13 @@ public class PolicyHandler {
             process.setTitle(requestedPublication.getTitle());
             process.setContent(requestedPublication.getContent());
             process.setStatus(ProcessingStatus.PENDING);
+            repository.save(process);
+
+            AiGeneratorPort.AiGeneratedResult aiResult = aiGenerator.generate(
+                    requestedPublication.getTitle(),
+                    requestedPublication.getContent()
+            );
+
             process.applyGeneratedContent(
                     aiResult.getSummary(),
                     aiResult.getPrice(),

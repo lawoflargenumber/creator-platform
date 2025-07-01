@@ -2,6 +2,7 @@ package creatorplatform.infra;
 
 import creatorplatform.domain.AiGeneratedContent;
 import creatorplatform.domain.AiGeneratedContentRepository;
+import creatorplatform.domain.ProcessingStatus;
 import creatorplatform.domain.port.AiGeneratorPort;
 import creatorplatform.infra.dto.AiContentResponse;
 import lombok.Getter;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/ai")
@@ -23,11 +25,20 @@ public class AiController {
     private AiGeneratorPort aiGenerator;
 
     @GetMapping("/{id}")
-    public ResponseEntity<AiContentResponse> getAiContents(@PathVariable Long id) {
-        return repository.findById(id)
-                .map(AiContentResponse::fromEntity)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<?> getAiContents(@PathVariable Long id) {
+        Optional<AiGeneratedContent> entity = repository.findById(id);
+
+        if (entity.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        AiGeneratedContent contentEntity = entity.get();
+
+        if (contentEntity.getStatus().equals(ProcessingStatus.PENDING)) {
+            return ResponseEntity.badRequest().body("AI 콘텐츠가 아직 생성 중입니다.");
+        }
+
+        return ResponseEntity.ok(AiContentResponse.fromEntity(contentEntity));
     }
 
     @PostMapping("/{id}/regenerate")
@@ -36,24 +47,30 @@ public class AiController {
             @PathVariable Long id,
             @RequestBody RegenerationRequest request
     ) {
-        return repository.findById(id).map(process -> {
-            AiGeneratorPort.AiGeneratedResult aiResult = aiGenerator.regenerate(
-                    process.getTitle(),
-                    process.getContent(),
-                    request.getUserPrompt()
-            );
+        Optional<AiGeneratedContent> entity = repository.findById(id);
 
-            process.applyGeneratedContent(
+        if (entity.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        AiGeneratedContent contentEntity = entity.get();
+        contentEntity.setStatus(ProcessingStatus.PENDING);
+
+        AiGeneratorPort.AiGeneratedResult aiResult = aiGenerator.regenerate(
+                contentEntity.getTitle(),
+                contentEntity.getContent(),
+                request.getUserPrompt()
+            );
+        contentEntity.applyGeneratedContent(
                     aiResult.getSummary(),
                     aiResult.getPrice(),
                     aiResult.getImageUrl(),
                     aiResult.getCategory()
             );
 
-            AiGeneratedContent updatedContent = repository.save(process);
+        AiGeneratedContent updatedContent = repository.save(contentEntity);
 
-            return ResponseEntity.ok(AiContentResponse.fromEntity(updatedContent));
-        }).orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(AiContentResponse.fromEntity(updatedContent));
     }
 
     @PostMapping("/{id}/complete")
