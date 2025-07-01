@@ -33,7 +33,7 @@ public class UserCommandService {
         user.setAuthorsProfile(cmd.authorsProfile);
         user.setAuthorNickname(cmd.authorNickname);
         usersRepository.save(user);
-        publisher.publishEvent(new AuthorshipAppliedEvent(cmd.id, user.getAuthorshipStatus()));
+        publisher.publishEvent(new AuthorshipAppliedEvent(cmd.id, user.getAuthorshipStatus(), user.getAuthorsProfile()));
     }
 
     public void handleStartSubscribe(StartSubscribeCommand cmd) {

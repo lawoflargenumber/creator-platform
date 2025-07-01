@@ -202,6 +202,28 @@ public class UserAccessProfileService {
         });
     }
 
+    /**
+     * 작가 신청 이벤트 비즈니스 프로세스  
+     * 이벤트: AuthorshipApplied (Account → View)
+     * 비즈니스 규칙: 작가 신청 정보를 View에 반영
+     */
+    public void processAuthorshipApplication(AuthorshipApplied authorshipApplied) {
+        System.out.println("AuthorshipApplied 이벤트 수신! userId: " + authorshipApplied.getId() + 
+                          ", authorshipStatus: " + authorshipApplied.getAuthorshipStatus() + 
+                          ", authorsProfile: " + authorshipApplied.getAuthorsProfile());
+        
+        // 해당 사용자의 작가 신청 정보 업데이트
+        userAccessProfileRepository.findById(authorshipApplied.getId()).ifPresent(userAccessProfile -> {
+            // 작가 신청 상태와 프로필을 View에 반영
+            userAccessProfile.setAuthorshipStatus(authorshipApplied.getAuthorshipStatus());
+            userAccessProfile.setAuthorsProfile(authorshipApplied.getAuthorsProfile());
+            
+            userAccessProfileRepository.save(userAccessProfile);
+            System.out.println("작가 신청 정보 업데이트 완료! userId: " + authorshipApplied.getId() + 
+                             ", status: " + authorshipApplied.getAuthorshipStatus());
+        });
+    }
+
     // 가격 조회 헬퍼 메소드
     private Integer getProductPrice(Long productId) {
         return checkPriceRepository.findById(productId)
