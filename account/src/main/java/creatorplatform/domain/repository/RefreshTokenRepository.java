@@ -1,4 +1,4 @@
-package creatorplatform.repository;
+package creatorplatform.domain.repository;
 
 import creatorplatform.domain.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;

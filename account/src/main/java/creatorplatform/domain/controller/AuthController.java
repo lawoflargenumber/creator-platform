@@ -1,15 +1,16 @@
-package creatorplatform.controller;
+package creatorplatform.domain.controller;
 
-import creatorplatform.model.User;
-import creatorplatform.repository.UserRepository;
-import creatorplatform.repository.RefreshTokenRepository;
-import creatorplatform.security.JwtUtils;
+import creatorplatform.domain.model.User;
+import creatorplatform.domain.repository.UserRepository;
+import creatorplatform.domain.repository.RefreshTokenRepository;
+import creatorplatform.domain.security.JwtUtils;
 import creatorplatform.domain.RefreshToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import java.time.Instant;
 import java.util.UUID;
+import creatorplatform.domain.controller.RegisterRequest;
 
 @RestController
 @RequestMapping("/auth")
@@ -21,7 +22,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<User> register(@RequestBody RegisterRequest req) {
-        if (userRepo.existsByEmail(req.getEmail())) {
+        if (userRepo.findByEmail(req.getEmail()).isPresent()) {
             return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(null);
@@ -39,4 +40,5 @@ public class AuthController {
         User saved = userRepo.save(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
+    // 기존 로그인, refresh, logout 메서드...
 }

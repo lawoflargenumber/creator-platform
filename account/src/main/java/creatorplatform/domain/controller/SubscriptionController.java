@@ -1,7 +1,8 @@
-package creatorplatform.controller;
-import creatorplatform.model.Subscription;
-import creatorplatform.repository.SubscriptionRepository;
-import creatorplatform.repository.UserRepository;
+package creatorplatform.domain.controller;
+import creatorplatform.domain.model.Subscription;
+import creatorplatform.domain.repository.SubscriptionRepository;
+import creatorplatform.domain.repository.UserRepository;
+import creatorplatform.domain.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,3 +27,4 @@ public class SubscriptionController {
         return ResponseEntity.ok(subRepo.save(s));
     }
 }
+
