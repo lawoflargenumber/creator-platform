@@ -37,35 +37,34 @@ public class ProductsController {
         productsRepository.save(products);
     }
 
+    @GetMapping("/products/literature")
+    public List<ProductSummaryDto> getLiteratureProducts() {
+        return getProductsByCategory("문학");
+    }
 
-    // 출간 요청 처리 (POST /products)
-    @PostMapping("/products")
-    public Products completePublication(
-        @RequestBody CompletePublication command,
-        HttpServletRequest request,
-        HttpServletResponse response
-        ) throws Exception {
-            System.out.println("##### /products [POST] - completePublication called #####");
+    @GetMapping("/products/economy")
+    public List<ProductSummaryDto> getEconomyProducts() {
+        return getProductsByCategory("경제");
+    }
 
-            Products product = Products.createFrom(command);  // 도메인 객체 생성
-            productsRepository.save(product);                 // DB에 저장
+    @GetMapping("/products/selfdevelopment")
+    public List<ProductSummaryDto> getSelfDevelopmentProducts() {
+        return getProductsByCategory("자기계발");
+    }
 
-            return product;  // 저장된 객체 반환
-        }
+    @GetMapping("/products/lifestyle")
+    public List<ProductSummaryDto> getLifestyleProducts() {
+        return getProductsByCategory("라이프스타일");
+    }
 
-    @GetMapping("/products")
-    public List<ProductSummaryDto> getAllProductSummaries(
-        @RequestParam(required = false) String category
-    ) {
-        List<Products> productsList;
+    @GetMapping("/products/others")
+    public List<ProductSummaryDto> getOthersProducts() {
+        return getProductsByCategory("기타");
+    }
 
-        if (category != null && !category.isEmpty()) {
-            productsList = productsRepository.findByCategory(category);
-        } else {
-        productsList = (List<Products>) productsRepository.findAll();
-        }
-
-        // 필요한 필드만 담아서 DTO로 변환
+    // 공통 로직
+    private List<ProductSummaryDto> getProductsByCategory(String category) {
+        List<Products> productsList = productsRepository.findByCategory(category);
         return productsList.stream()
             .map(p -> new ProductSummaryDto(
                 p.getId(),
@@ -78,6 +77,7 @@ public class ProductsController {
             ))
             .toList();
     }
+
 
     @GetMapping("/products/bestsellers")
     public List<ProductSummaryDto> getBestSellers() {

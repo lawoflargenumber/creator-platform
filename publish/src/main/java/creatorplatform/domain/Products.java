@@ -22,7 +22,7 @@ public class Products {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private Long draftId;
+    // private Long draftId;
 
     private Long authorId;
 
