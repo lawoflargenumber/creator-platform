@@ -56,15 +56,15 @@ spring:
         - id: account
           uri: http://account:8082
           predicates:
-            - Path=/account/**, 
+            - Path=/users/**, 
         - id: writing
           uri: http://writing:8081
           predicates:
-            - Path=/writing/**, 
+            - Path=/draft/**, 
         - id: publish
           uri: http://publish:8084
           predicates:
-            - Path=/publish/**
+            - Path=/products/**
         - id: view
           uri: http://view:8085
           predicates:
