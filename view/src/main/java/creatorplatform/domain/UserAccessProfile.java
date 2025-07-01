@@ -20,15 +20,22 @@ public class UserAccessProfile  {
     
 
 private Long id;    
-    
+
+private String accountId;
+
+private String nickname;
     
 private Boolean isSubscribed;    
     
-    
 private Integer points;    
     
-    
 private Date subscribtionDue;
+
+private String authorshipStatus;
+
+private String autornickname;
+
+private String authorsProfile;
 
 //<<< Clean Arch / Port Method
     /**
