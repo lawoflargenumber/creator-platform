@@ -1,4 +1,4 @@
-package creatorplatform.policy;
+package creatorplatform.infra;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import creatorplatform.config.kafka.KafkaProcessor;
@@ -22,6 +22,7 @@ public class PublicationPolicy {
     public void wheneverGenerationCompleted_SaveProduct(@Payload String eventString) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
+            @SuppressWarnings("unchecked")
             Map<String, Object> event = objectMapper.readValue(eventString, Map.class);
 
             // 이벤트 타입 확인

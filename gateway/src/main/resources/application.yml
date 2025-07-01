@@ -58,7 +58,7 @@ spring:
           predicates:
             - Path=/users/**, 
         - id: writing
-          uri: http://writing:8080
+          uri: http://writing:8081
           predicates:
             - Path=/drafts/**, 
         - id: publish
@@ -70,7 +70,7 @@ spring:
           predicates:
             - Path=/userAccessProfiles/**, /viewHistories/**
         - id: ai
-          uri: http://ai:8080
+          uri: http://ai:8086
           predicates:
             - Path=/undefined/**, 
         - id: frontend

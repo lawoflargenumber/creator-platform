@@ -40,30 +40,71 @@ logging:
     org.hibernate.type: trace
     org.springframework.cloud: debug
 
-# -------- docker --------
----
+-------- docker --------
+# ---
+# server:
+#   port: 8081
+
+# spring:
+#   profiles: docker
+#   datasource:
+#     url: jdbc:mysql://mysql:3306/writing
+#     username: root
+#     password: root
+#   jpa:
+#     hibernate:
+#       ddl-auto: update
+#   cloud:
+#     stream:
+#       kafka:
+#         binder:
+#           brokers: my-kafka:29092
+#       bindings:
+#         event-in:
+#           group: writing
+#           destination: creatorplatform.completed-publication
+#           content-type: application/json   # ✅ kebab-case
+#         event-out:
+#           destination: creatorplatform
+#           content-type: application/json
+
+# authors:
+#   url: http://account:8081
+
+server:
+  port: 8081
+
 spring:
   profiles: docker
-  datasource:
-    url: jdbc:mysql://mysql:3306/writing
-    username: root
-    password: root
   jpa:
-    hibernate:
-      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        implicit_naming_strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
   cloud:
     stream:
       kafka:
         binder:
           brokers: my-kafka:29092
+        streams:
+          binder:
+            configuration:
+              default:
+                key:
+                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+                value:
+                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
       bindings:
         event-in:
           group: writing
-          destination: creatorplatform.completed-publication
-          content-type: application/json   # ✅ kebab-case
+          destination: creatorplatform
+          contentType: application/json
         event-out:
           destination: creatorplatform
-          content-type: application/json
+          contentType: application/json
 
-authors:
-  url: http://account:8081
+api:
+  url: 
+    writing: writing:8081
+    

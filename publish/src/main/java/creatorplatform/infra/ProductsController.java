@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 @Transactional
 public class ProductsController {
 
+    @Autowired
+    private ProductsRepository productsRepository;
+
     @RequestMapping(
         value = "/products/{id}/trackview",
         method = RequestMethod.PUT,
