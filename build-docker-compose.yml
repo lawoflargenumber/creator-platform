@@ -106,12 +106,16 @@ services:
     volumes:
       - ./ai:/usr/src
       - ./maven-repo:/root/.m2
+<<<<<<< HEAD
+
+=======
     command: mvn spring-boot:run
     environment:
       SPRING_PROFILES_ACTIVE: docker
     ports:
       - "8086:8086"
       
+>>>>>>> upstream/main
   gateway:
     depends_on: 
       - kafka
@@ -125,5 +129,3 @@ services:
     volumes:
       - ./gateway:/usr/src
       - ./maven-repo:/root/.m2
-      
-
