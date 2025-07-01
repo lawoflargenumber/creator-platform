@@ -1,4 +1,4 @@
-package creatorplatform.controller;
+package creatorplatform.domain.controller;
 
 import lombok.Data;
 

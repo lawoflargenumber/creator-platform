@@ -9,5 +9,5 @@ public class ApplyForAuthorshipCommand {
 
     private Long id;
     private String authorsProfile;
-    private String autornickname;
+    private String authorNickname;
 }

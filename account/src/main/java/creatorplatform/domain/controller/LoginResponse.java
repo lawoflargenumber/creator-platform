@@ -1,6 +1,6 @@
-package creatorplatform.controller;
+package creatorplatform.domain.controller;
 
-import creatorplatform.model.User;
+import creatorplatform.domain.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

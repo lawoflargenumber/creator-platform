@@ -1,4 +1,4 @@
-package creatorplatform.security;
+package creatorplatform.domain.security;
 
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;

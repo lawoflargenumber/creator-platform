@@ -1,5 +1,6 @@
-package creatorplatform.security;
+package creatorplatform.domain.security;
 
+import creatorplatform.domain.security.CustomUserDetailsService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.filter.OncePerRequestFilter;
