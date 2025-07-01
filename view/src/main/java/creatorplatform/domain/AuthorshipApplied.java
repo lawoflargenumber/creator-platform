@@ -9,4 +9,5 @@ import lombok.*;
 public class AuthorshipApplied extends AbstractEvent {
     private Long id;
     private String authorshipStatus;
+    private String authorsProfile;
 } 

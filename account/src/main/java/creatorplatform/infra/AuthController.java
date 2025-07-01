@@ -4,9 +4,10 @@ import creatorplatform.domain.Users;
 import creatorplatform.domain.RefreshToken;
 import creatorplatform.domain.UsersRepository;
 import creatorplatform.domain.repository.RefreshTokenRepository;
+import creatorplatform.domain.controller.RegisterRequest;
 import creatorplatform.domain.security.JwtUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import java.time.Instant;
 import java.util.UUID;
@@ -20,9 +21,29 @@ public class AuthController {
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtUtils jwtUtils;
 
+    @PostMapping("/register")
+    public ResponseEntity<Users> register(@RequestBody RegisterRequest req) {
+        if (usersRepository.findByAccountId(req.getEmail()).isPresent()) {
+            return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(null);
+        }
+        // Users 엔티티로 생성
+        Users user = new Users();
+        user.setAccountId(req.getEmail());
+        user.setPassword(req.getPassword());
+        user.setNickname(req.getNickname());
+        user.setAgreedToMarketing(req.getMarketingConsent());
+        user.setAuthorshipStatus("DEFAULT");
+        user.setSubscriber(false);
+        
+        Users saved = usersRepository.save(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+    }
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        Optional<Users> userOpt = usersRepository.findByEmail(request.getEmail());
+        Optional<Users> userOpt = usersRepository.findByAccountId(request.getEmail());
         if (userOpt.isEmpty() || !userOpt.get().getPassword().equals(request.getPassword())) {
             return ResponseEntity.badRequest().body("Invalid credentials");
         }
