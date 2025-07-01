@@ -15,17 +15,24 @@ import java.util.List;
 public class DraftsController {
 
     private final DraftsRepository repo;
+    private final CheckAuthorsRepository checkAuthorsRepository;
 
     // ---------- 드래프트 저장 ----------
     @PostMapping("/savedraft")
     public EntityModel<Drafts> saveDraft(@RequestBody SaveDraftCommand cmd) {
+
+        String nickname = checkAuthorsRepository.findById(cmd.getAuthorId())
+                .map(CheckAuthors::getNickname)
+                .orElse(null);
+        cmd.setAuthorNickname(nickname);
+
         Drafts draft = new Drafts();
         draft.saveDraft(cmd);
         Drafts saved = repo.save(draft);
 
         return EntityModel.of(saved,
             linkTo(methodOn(DraftsController.class).getDraft(saved.getId())).withSelfRel(),
-            linkTo(methodOn(DraftsController.class).listDrafts()).withRel("drafts")
+            linkTo(methodOn(DraftsController.class).listDrafts(saved.getAuthorId())).withRel("drafts")
         );
     }
 
@@ -41,6 +48,11 @@ public class DraftsController {
     // ---------- 직접 출판 ----------
     @PostMapping("/publish")
     public Drafts directPublish(@RequestBody SaveDraftCommand cmd) {
+        String nickname = checkAuthorsRepository.findById(cmd.getAuthorId())
+                .map(CheckAuthors::getNickname)
+                .orElse(null);
+        cmd.setAuthorNickname(nickname);
+
         Drafts draft = new Drafts();
         draft.saveDraft(cmd);
 
@@ -58,9 +70,9 @@ public class DraftsController {
 
 
     // ---------- 전체 목록 조회 ----------
-    @GetMapping
-    public Iterable<Drafts> listDrafts() {
-        return repo.findAll();
+    @GetMapping("author/{authorId}")
+    public Iterable<Drafts> listDrafts(@PathVariable Long authorId) {
+        return repo.findByAuthorId(authorId);
     }
 
     // ---------- 단건 조회 ----------
@@ -69,7 +81,7 @@ public class DraftsController {
         Drafts draft = repo.findById(id).orElseThrow(() -> new RuntimeException("Draft not found"));
         return EntityModel.of(draft,
             linkTo(methodOn(DraftsController.class).getDraft(id)).withSelfRel(),
-            linkTo(methodOn(DraftsController.class).listDrafts()).withRel("drafts")
+            linkTo(methodOn(DraftsController.class).listDrafts(draft.getAuthorId())).withRel("drafts")
         );
     }
     // ---------- 수정 요청 ----------
