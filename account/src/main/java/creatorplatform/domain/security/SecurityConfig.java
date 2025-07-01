@@ -1,4 +1,4 @@
-package creatorplatform.security;
+package creatorplatform.domain.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.*;

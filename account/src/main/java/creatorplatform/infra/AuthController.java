@@ -2,9 +2,9 @@ package creatorplatform.infra;
 
 import creatorplatform.domain.Users;
 import creatorplatform.domain.RefreshToken;
-import creatorplatform.domain.repository.UsersRepository;
+import creatorplatform.domain.UsersRepository;
 import creatorplatform.domain.repository.RefreshTokenRepository;
-import creatorplatform.security.JwtUtils;
+import creatorplatform.domain.security.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +27,7 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Invalid credentials");
         }
         Users user = userOpt.get();
-        String accessToken = jwtUtils.generateJwtToken(user.getEmail());
+        String accessToken = jwtUtils.generateJwtToken(user.getAccountId());
         String refreshTokenStr = UUID.randomUUID().toString();
         RefreshToken rt = RefreshToken.builder()
                 .user(user)
@@ -48,7 +48,7 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Invalid refresh token");
         }
         RefreshToken rt = rtOpt.get();
-        String newAccessToken = jwtUtils.generateJwtToken(rt.getUser().getEmail());
+        String newAccessToken = jwtUtils.generateJwtToken(rt.getUser().getAccountId());
         String newRefreshTokenStr = UUID.randomUUID().toString();
         rt.setToken(newRefreshTokenStr);
         rt.setIssuedAt(Instant.now());

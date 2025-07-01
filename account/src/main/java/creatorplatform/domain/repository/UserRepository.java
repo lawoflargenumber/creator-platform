@@ -1,6 +1,6 @@
-package creatorplatform.repository;
+package creatorplatform.domain.repository;
 
-import creatorplatform.model.User;
+import creatorplatform.domain.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 

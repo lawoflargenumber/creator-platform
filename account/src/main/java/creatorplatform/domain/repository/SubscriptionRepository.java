@@ -1,6 +1,6 @@
-package creatorplatform.repository;
+package creatorplatform.domain.repository;
 
-import creatorplatform.model.Subscription;
+import creatorplatform.domain.model.Subscription;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 

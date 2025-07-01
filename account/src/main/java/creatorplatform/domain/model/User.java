@@ -1,4 +1,4 @@
-package creatorplatform.model;
+package creatorplatform.domain.model;
 
 import lombok.*;
 import javax.persistence.*;

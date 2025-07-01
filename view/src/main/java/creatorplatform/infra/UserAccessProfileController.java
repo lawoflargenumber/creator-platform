@@ -45,7 +45,7 @@ public class UserAccessProfileController {
     }
     */
 
-    // 📖 책 읽기 접근 권한 확인
+    // 책 읽기 접근 권한 확인
     @GetMapping("/userAccessProfiles/{id}/accesstocontent")
     public ResponseEntity<Map<String, Object>> accessToContent(
         @PathVariable Long id,
@@ -63,7 +63,7 @@ public class UserAccessProfileController {
         }
     }
 
-    // 💰 포인트 구매 가능 여부 확인
+    // 포인트 구매 가능 여부 확인
     @GetMapping("/userAccessProfiles/{id}/checkpurchaseability")
     public ResponseEntity<Map<String, Object>> checkPurchaseability(
         @PathVariable Long id,
@@ -80,7 +80,7 @@ public class UserAccessProfileController {
         }
     }
 
-    // 🛒 포인트로 구매 실행
+    // 포인트로 구매 실행
     @PostMapping("/userAccessProfiles/{id}/purchasewithpoints")
     public ResponseEntity<Map<String, Object>> purchaseWithPoints(
         @PathVariable Long id,
