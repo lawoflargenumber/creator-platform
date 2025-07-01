@@ -32,8 +32,8 @@ public class AiAdapter implements AiGeneratorPort {
     }
 
     private AiGeneratedResult processAiGeneration(String originalText, String userPrompt) {
-        GptTextResult gptResult = generateTextualContent(originalText, userPrompt);
-        String imagePrompt = createImagePromptFrom(gptResult.getSummary());
+        GptTextResult gptResult = generateTextualContent(originalText);
+        String imagePrompt = createImagePromptFrom(originalText, userPrompt);
         String imageUrl = generateImage(imagePrompt);
 
         Category categoryEnum = Category.fromDisplayName(gptResult.getCategory());
@@ -41,10 +41,10 @@ public class AiAdapter implements AiGeneratorPort {
         return new AiGeneratedResult(gptResult.getSummary(), categoryEnum, gptResult.getPrice(), imageUrl);
     }
 
-    private GptTextResult generateTextualContent(String originalText, String userPrompt) {
+    private GptTextResult generateTextualContent(String originalText) {
         HttpHeaders headers = createHeaders();
 
-        String gptPrompt = createGptPrompt(originalText, userPrompt);
+        String gptPrompt = createGptPrompt(originalText);
         Map<String, Object> requestBody = Map.of(
                 "model", "gpt-4o-mini",
                 "messages", new Object[]{ Map.of("role", "user", "content", gptPrompt) },
@@ -64,11 +64,11 @@ public class AiAdapter implements AiGeneratorPort {
         HttpHeaders headers = createHeaders();
 
         Map<String, Object> requestBody = Map.of(
-                "model", "gpt-image-1",
+                "model", "dall-e-3",
                 "prompt", imagePrompt,
                 "n", 1,
-                "size", "1024x1536",
-                "quality", "medium"
+                "size", "1024x1792",
+                "quality", "hd"
         );
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
@@ -86,7 +86,7 @@ public class AiAdapter implements AiGeneratorPort {
         return headers;
     }
 
-    private String createGptPrompt(String originalText, String userPrompt) {
+    private String createGptPrompt(String originalText) {
         String categories = "\"문학\", \"경제\", \"자기계발\", \"라이프스타일\", \"기타\"";
 
         return String.format(
@@ -98,16 +98,15 @@ public class AiAdapter implements AiGeneratorPort {
                         "### 가격 책정 기준:\n" +
                         "- 글의 분량 및 깊이: 글이 길고 심도 깊은 내용을 다룰수록 높은 가격.\n" +
                         "--- 원본 텍스트 ---\n" +
-                        "%s\n\n" +
-                        "--- 추가적인 요청사항 ---\n" +
-                        "%s",
-                categories, originalText, userPrompt
+                        "%s\n\n",
+                categories, originalText
         );
     }
 
-    private String createImagePromptFrom(String summary) {
+    private String createImagePromptFrom(String originalText, String userPrompt) {
         return String.format(
-                "다음 글의 요약을 읽으시고 책의 커버 이미지를 생성해주세요: \n%s", summary
+                "다음 글의 제목과 내용을 읽으시고 온라인 콘텐츠 플랫폼에서 사용할 커버 이미지를 생성해주세요: \n%s" +
+                        "--- 추가적인 요청사항 ---\n%s", originalText, userPrompt
         );
     }
 

@@ -1,3 +1,4 @@
+
 package creatorplatform.domain.repository;
 
 import creatorplatform.domain.model.User;

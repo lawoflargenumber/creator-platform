@@ -29,4 +29,3 @@ public class UserController {
         return ResponseEntity.ok(userRepo.save(u));
     }
 }
-

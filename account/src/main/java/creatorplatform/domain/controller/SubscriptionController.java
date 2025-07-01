@@ -27,3 +27,4 @@ public class SubscriptionController {
         return ResponseEntity.ok(subRepo.save(s));
     }
 }
+
