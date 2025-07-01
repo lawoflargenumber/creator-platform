@@ -22,41 +22,22 @@ public class DataInitializer {
 
     @PostConstruct
     public void initializeData() {
-        // 테스트용 초기 데이터 생성
-        createTestUserProfiles();
+        // 테스트용 초기 데이터 생성 (SubscriptionStarted 이벤트 테스트용 유저 1명)
+        createTestUserProfile();
         createTestPriceData();
         createTestPurchaseHistory(); 
     }
 
-    private void createTestUserProfiles() {
-        // 시나리오 1: 구독 없음, 포인트 부족 (50포인트) → AccessDenied
+    private void createTestUserProfile() {
+        // id=1 구독 안된 유저 (SubscriptionStarted 이벤트 테스트용)
         UserAccessProfile user1 = new UserAccessProfile();
         user1.setId(1L);
         user1.setIsSubscribed(false);
-        user1.setPoints(50);
+        user1.setPoints(100);
         user1.setSubscribtionDue(null);
         userAccessProfileRepository.save(user1);
 
-        // 시나리오 2: 활성 구독 있음 → AccessGranted
-        UserAccessProfile user2 = new UserAccessProfile();
-        user2.setId(2L);
-        user2.setIsSubscribed(true);
-        user2.setPoints(30);
-        // 구독 만료일을 미래로 설정
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.MONTH, 3); // 3개월 후
-        user2.setSubscribtionDue(cal.getTime());
-        userAccessProfileRepository.save(user2);
-
-        // 시나리오 3: 구독 없음, 포인트 충분 (150포인트) → AccessDenied
-        UserAccessProfile user3 = new UserAccessProfile();
-        user3.setId(3L);
-        user3.setIsSubscribed(false);
-        user3.setPoints(150);
-        user3.setSubscribtionDue(null);
-        userAccessProfileRepository.save(user3);
-
-        System.out.println("✅ UserAccessProfile 테스트 데이터 3개 생성 완료");
+        System.out.println("✅ SubscriptionStarted 이벤트 테스트용 UserAccessProfile id=1 생성 완료");
     }
 
     private void createTestPriceData() {

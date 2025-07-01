@@ -74,7 +74,6 @@ public class Users {
     //>>> Clean Arch / Port Method
     //<<< Clean Arch / Port Method
     public void startSubscribe() {
-        //implement business logic here:
 
         SubscriptionStarted subscriptionStarted = new SubscriptionStarted(this);
         subscriptionStarted.publishAfterCommit();

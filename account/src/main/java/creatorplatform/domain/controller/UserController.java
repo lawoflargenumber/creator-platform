@@ -1,5 +1,6 @@
 package creatorplatform.controller;
 
+
 import creatorplatform.model.User;
 import creatorplatform.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,3 +28,4 @@ public class UserController {
         return ResponseEntity.ok(userRepo.save(u));
     }
 }
+
