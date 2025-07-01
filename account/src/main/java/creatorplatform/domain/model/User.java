@@ -11,4 +11,5 @@ public class User {
     private String nickname;
     private boolean isAuthor;
     private int points;
+    private boolean marketingConsent;
 }
