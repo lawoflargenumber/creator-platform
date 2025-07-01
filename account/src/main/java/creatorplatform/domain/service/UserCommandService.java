@@ -31,8 +31,9 @@ public class UserCommandService {
         Users user = usersRepository.findById(Long.parseLong(cmd.id)).orElseThrow();
         user.setAuthorshipStatus("PENDING");
         user.setAuthorsProfile(cmd.authorsProfile);
+        user.setAuthorNickname(cmd.authorNickname);
         usersRepository.save(user);
-        publisher.publishEvent(new AuthorshipAppliedEvent(cmd.id, cmd.authorsProfile));
+        publisher.publishEvent(new AuthorshipAppliedEvent(cmd.id, user.getAuthorshipStatus()));
     }
 
     public void handleStartSubscribe(StartSubscribeCommand cmd) {
@@ -46,7 +47,7 @@ public class UserCommandService {
         Users user = usersRepository.findById(Long.parseLong(cmd.id)).orElseThrow();
         user.setAuthorshipStatus("ACCEPTED");
         usersRepository.save(user);
-        publisher.publishEvent(new AuthorshipAcceptedEvent(cmd.id, user.getNickname()));
+        publisher.publishEvent(new AuthorshipAcceptedEvent(cmd.id, user.getAuthorNickname()));
     }
 
     public void handleDeclineApplication(DeclineApplicationCommand cmd) {

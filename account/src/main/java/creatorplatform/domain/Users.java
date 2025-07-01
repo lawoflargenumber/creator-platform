@@ -34,7 +34,7 @@ public class Users {
 
     private String authorsProfile;
 
-    private String autornickname;
+    private String authorNickname;
 
     private Boolean agreedToMarketing;
 
