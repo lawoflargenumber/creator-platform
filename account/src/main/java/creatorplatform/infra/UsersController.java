@@ -21,7 +21,7 @@ public class UsersController {
     UsersRepository usersRepository;
 
     @RequestMapping(
-        value = "/users/registeruser",
+        value = "/users/register",
         method = RequestMethod.POST,
         produces = "application/json;charset=UTF-8"
     )
