@@ -5,3 +5,6 @@
 /maven-repo/
 
 .ideamaven-repo/
+
+# application-docker.yml 파일 제외
+/ai/src/main/resources/application-docker.yml
