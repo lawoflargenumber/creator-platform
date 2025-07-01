@@ -8,7 +8,7 @@ services:
     ports:
       - 2181:2181
   kafka:
-    image: confluentinc/cp-kafka:latest
+    image: confluentinc/cp-kafka:7.4.0
     container_name: my-kafka
     depends_on:
       - zookeeper
@@ -91,4 +91,18 @@ services:
     working_dir: /usr/src
     volumes:
       - ./ai:/usr/src
+      - ./maven-repo:/root/.m2
+
+  gateway:
+    depends_on: 
+      - kafka
+    image: adoptopenjdk/maven-openjdk11:latest
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    command: mvn spring-boot:run
+    ports:
+      - 8080:8080
+    working_dir: /usr/src
+    volumes:
+      - ./gateway:/usr/src
       - ./maven-repo:/root/.m2

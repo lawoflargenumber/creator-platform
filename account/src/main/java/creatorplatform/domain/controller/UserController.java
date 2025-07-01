@@ -1,52 +1,31 @@
-
 package creatorplatform.domain.controller;
 
-import creatorplatform.domain.command.*;
-import creatorplatform.domain.service.UserCommandService;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import creatorplatform.domain.model.User;
+import creatorplatform.domain.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import creatorplatform.domain.security.UserPrincipal;
 
-@RestController
-@RequestMapping("/users")
+@RestController @RequestMapping("/users") @RequiredArgsConstructor
 public class UserController {
+    private final UserRepository userRepo;
 
-    @Autowired
-    private UserCommandService service;
-
-    @PostMapping("/register")
-    public ResponseEntity<Void> register(@RequestBody RegisterUserCommand cmd) {
-        service.handleRegisterUser(cmd);
-        return ResponseEntity.ok().build();
+    @GetMapping("/me")
+    public ResponseEntity<User> getMe(@AuthenticationPrincipal UserPrincipal p) {
+        User user = userRepo.findByEmail(p.getUsername()).orElseThrow();
+        return ResponseEntity.ok(user);
     }
 
-    @PostMapping("/apply-authorship")
-    public ResponseEntity<Void> applyForAuthorship(@RequestBody ApplyForAuthorshipCommand cmd) {
-        service.handleApplyForAuthorship(cmd);
-        return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/start-subscription")
-    public ResponseEntity<Void> startSubscribe(@RequestBody StartSubscribeCommand cmd) {
-        service.handleStartSubscribe(cmd);
-        return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/accept-application")
-    public ResponseEntity<Void> accept(@RequestBody AcceptApplicationCommand cmd) {
-        service.handleAcceptApplication(cmd);
-        return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/decline-application")
-    public ResponseEntity<Void> decline(@RequestBody DeclineApplicationCommand cmd) {
-        service.handleDeclineApplication(cmd);
-        return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/update-user")
-    public ResponseEntity<Void> update(@RequestBody UpdateUserCommand cmd) {
-        service.handleUpdateUser(cmd);
-        return ResponseEntity.ok().build();
+    @PutMapping("/me")
+    public ResponseEntity<User> updateMe(@AuthenticationPrincipal UserPrincipal p,
+        @RequestBody UpdateUserRequest req) {
+        User u = userRepo.findByEmail(p.getUsername()).orElseThrow();
+        if (req.getNickname() != null) u.setNickname(req.getNickname());
+        if (req.getPoints() != null) u.setPoints(req.getPoints());
+        if (req.getMarketingConsent() != null) u.setMarketingConsent(req.getMarketingConsent());
+        return ResponseEntity.ok(userRepo.save(u));
     }
 }

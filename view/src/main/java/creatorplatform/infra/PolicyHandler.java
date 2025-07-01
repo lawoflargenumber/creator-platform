@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import creatorplatform.config.kafka.KafkaProcessor;
 import creatorplatform.domain.*;
+import creatorplatform.service.UserAccessProfileService;
 import javax.naming.NameParser;
 import javax.naming.NameParser;
 import javax.transaction.Transactional;
@@ -12,6 +13,11 @@ import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
+/**
+ * Infrastructure Layer - Event Router
+ * 역할: Kafka 이벤트 수신 후 Application Service로 라우팅
+ * vs Application Service: 비즈니스 프로세스 처리는 Service Layer에서 담당
+ */
 //<<< Clean Arch / Inbound Adaptor
 @Service
 @Transactional
@@ -19,10 +25,17 @@ public class PolicyHandler {
 
     @Autowired
     UserAccessProfileRepository userAccessProfileRepository;
+    
+    @Autowired
+    UserAccessProfileService userAccessProfileService;
 
     @StreamListener(KafkaProcessor.INPUT)
     public void whatever(@Payload String eventString) {}
 
+    /**
+     * 사용자 등록 이벤트 라우팅
+     * Account 서비스 → View 서비스 이벤트 전달
+     */
     @StreamListener(
         value = KafkaProcessor.INPUT,
         condition = "headers['type']=='UserRegistered'"
@@ -31,14 +44,15 @@ public class PolicyHandler {
         @Payload UserRegistered userRegistered
     ) {
         UserRegistered event = userRegistered;
-        System.out.println(
-            "\n\n##### listener AddUser : " + userRegistered + "\n\n"
-        );
 
-        // Sample Logic //
-        UserAccessProfile.addUser(event);
+        // Application Service로 비즈니스 프로세스 위임
+        userAccessProfileService.processUserRegistration(event);
     }
 
+    /**
+     * 구독 시작 이벤트 라우팅
+     * Account 서비스 → View 서비스 이벤트 전달
+     */
     @StreamListener(
         value = KafkaProcessor.INPUT,
         condition = "headers['type']=='SubscriptionStarted'"
@@ -47,14 +61,9 @@ public class PolicyHandler {
         @Payload SubscriptionStarted subscriptionStarted
     ) {
         SubscriptionStarted event = subscriptionStarted;
-        System.out.println(
-            "\n\n##### listener AddSubscription : " +
-            subscriptionStarted +
-            "\n\n"
-        );
 
-        // Sample Logic //
-        UserAccessProfile.addSubscription(event);
+        // Application Service로 비즈니스 프로세스 위임
+        userAccessProfileService.processSubscriptionActivation(event);
     }
 }
 //>>> Clean Arch / Inbound Adaptor

@@ -1,10 +1,10 @@
-
 package creatorplatform.domain.service;
 
+import creatorplatform.domain.Users;
 import creatorplatform.domain.aggregate.RegisteredUser;
 import creatorplatform.domain.command.*;
 import creatorplatform.domain.event.*;
-import creatorplatform.domain.repository.UserRepository;
+import creatorplatform.domain.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -12,53 +12,54 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserCommandService {
 
-    @Autowired private UserRepository userRepository;
+    @Autowired private UsersRepository usersRepository;
     @Autowired private ApplicationEventPublisher publisher;
 
     public void handleRegisterUser(RegisterUserCommand cmd) {
-        RegisteredUser user = new RegisteredUser();
-        user.setId(cmd.id);
+        Users user = new Users();
+        user.setAccountId(cmd.id);
         user.setNickname(cmd.nickname);
         user.setPassword(cmd.password);
-        user.setAuthorshipStatus("PENDING");
-        user.setSubscribed(false);
+        user.setAuthorshipStatus("DEFAULT");
+        user.setSubscriber(false);
         user.setAgreedToMarketing(cmd.agreedToMarketing);
-        userRepository.save(user);
+        usersRepository.save(user);
         publisher.publishEvent(new UserRegisteredEvent(cmd.id, cmd.nickname));
     }
 
     public void handleApplyForAuthorship(ApplyForAuthorshipCommand cmd) {
-        RegisteredUser user = userRepository.findById(cmd.id).orElseThrow();
+        Users user = usersRepository.findById(Long.parseLong(cmd.id)).orElseThrow();
         user.setAuthorshipStatus("PENDING");
         user.setAuthorsProfile(cmd.authorsProfile);
-        userRepository.save(user);
-        publisher.publishEvent(new AuthorshipAppliedEvent(cmd.id, cmd.authorsProfile));
+        user.setAuthorNickname(cmd.authorNickname);
+        usersRepository.save(user);
+        publisher.publishEvent(new AuthorshipAppliedEvent(cmd.id, user.getAuthorshipStatus()));
     }
 
     public void handleStartSubscribe(StartSubscribeCommand cmd) {
-        RegisteredUser user = userRepository.findById(cmd.id).orElseThrow();
-        user.setSubscribed(true);
-        userRepository.save(user);
+        Users user = usersRepository.findById(Long.parseLong(cmd.id)).orElseThrow();
+        user.setSubscriber(true);
+        usersRepository.save(user);
         publisher.publishEvent(new SubscriptionStartedEvent(cmd.id));
     }
 
     public void handleAcceptApplication(AcceptApplicationCommand cmd) {
-        RegisteredUser user = userRepository.findById(cmd.id).orElseThrow();
+        Users user = usersRepository.findById(Long.parseLong(cmd.id)).orElseThrow();
         user.setAuthorshipStatus("ACCEPTED");
-        userRepository.save(user);
-        publisher.publishEvent(new AuthorshipAcceptedEvent(cmd.id, user.getNickname()));
+        usersRepository.save(user);
+        publisher.publishEvent(new AuthorshipAcceptedEvent(cmd.id, user.getAuthorNickname()));
     }
 
     public void handleDeclineApplication(DeclineApplicationCommand cmd) {
-        RegisteredUser user = userRepository.findById(cmd.id).orElseThrow();
+        Users user = usersRepository.findById(Long.parseLong(cmd.id)).orElseThrow();
         user.setAuthorshipStatus("DECLINED");
-        userRepository.save(user);
+        usersRepository.save(user);
     }
 
     public void handleUpdateUser(UpdateUserCommand cmd) {
-        RegisteredUser user = userRepository.findById(cmd.id).orElseThrow();
+        Users user = usersRepository.findById(Long.parseLong(cmd.id)).orElseThrow();
         user.setNickname(cmd.nickname);
         user.setAgreedToMarketing(cmd.agreedToMarketing);
-        userRepository.save(user);
+        usersRepository.save(user);
     }
 }

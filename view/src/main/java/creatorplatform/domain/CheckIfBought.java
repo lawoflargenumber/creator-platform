@@ -13,8 +13,9 @@ import lombok.Data;
 public class CheckIfBought {
 
     @Id
-    //@GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long checkId;
+    
     private Long id;
-
     private Long productId;
 }

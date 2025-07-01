@@ -2,10 +2,10 @@ package creatorplatform.domain.event;
 
 public class AuthorshipAppliedEvent {
     public String id;
-    public String authorsProfile;
+    public String authorshipStatus;
 
-    public AuthorshipAppliedEvent(String id, String authorsProfile) {
+    public AuthorshipAppliedEvent(String id, String authorshipStatus) {
         this.id = id;
-        this.authorsProfile = authorsProfile;
+        this.authorshipStatus = authorshipStatus;
     }
 }

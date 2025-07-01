@@ -45,3 +45,7 @@ node_modules
 .dist/
 .pem
 maven-repo/
+.env
+.env.*
+application-local.yml
+

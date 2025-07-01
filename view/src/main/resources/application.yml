@@ -50,10 +50,10 @@ api:
     view: localhost:8085 
     
 
+---
+
 server:
   port: 8085
-
----
 
 spring:
   profiles: docker
@@ -67,7 +67,7 @@ spring:
     stream:
       kafka:
         binder:
-          brokers: my-kafka:9092
+          brokers: my-kafka:29092
         streams:
           binder:
             configuration:

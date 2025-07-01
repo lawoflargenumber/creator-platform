@@ -29,7 +29,7 @@ public class ViewHistoryViewHandler {
             // view 객체에 이벤트의 Value 를 set 함
             viewHistory.setId(viewTracked.getUserId());
             viewHistory.setProductId(viewTracked.getId());
-            viewHistory.setViewdAt(viewTracked.getCreatedAt());
+            viewHistory.setViewedAt(viewTracked.getCreatedAt());
             // view 레파지 토리에 save
             viewHistoryRepository.save(viewHistory);
         } catch (Exception e) {
