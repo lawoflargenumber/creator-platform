@@ -38,8 +38,10 @@ public class DraftsController {
 
     // ---------- 출판 요청 ----------
     @PostMapping("/{id}/publish")
-    public Drafts publishDraft(@PathVariable Long id) {
+    public Drafts publishDraft(@PathVariable Long id, @RequestBody SaveDraftCommand cmd) {
         Drafts draft = repo.findById(id).orElseThrow(() -> new RuntimeException("Draft not found"));
+        draft.saveDraft(cmd);
+
         draft.requestPublication();
         return repo.save(draft);
     }

@@ -25,26 +25,26 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
 
-  mysql:
-    image: mysql:8
-    container_name: mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: writing
-    ports:
-      - 3306:3306
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+  # mysql:
+  #   image: mysql:8
+  #   container_name: mysql
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: root
+  #     MYSQL_DATABASE: writing
+  #   ports:
+  #     - 3306:3306
+  #   healthcheck:
+  #     test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
 
   writing:
     image: adoptopenjdk/maven-openjdk11:latest
     container_name: writing
     depends_on:
       - kafka
-      - mysql
+      #  - mysql
     working_dir: /usr/src
     volumes:
       - ./writing:/usr/src
@@ -53,7 +53,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
     ports:
-      - "8083:8080"
+      - "8081:8081"
 
 
   account:
@@ -106,7 +106,16 @@ services:
     volumes:
       - ./ai:/usr/src
       - ./maven-repo:/root/.m2
+<<<<<<< HEAD
 
+=======
+    command: mvn spring-boot:run
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8086:8086"
+      
+>>>>>>> upstream/main
   gateway:
     depends_on: 
       - kafka

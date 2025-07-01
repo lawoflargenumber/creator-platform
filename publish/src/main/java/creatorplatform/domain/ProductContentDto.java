@@ -1,4 +1,4 @@
-package creatorplatform.infra;
+package creatorplatform.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

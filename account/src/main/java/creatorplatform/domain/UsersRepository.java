@@ -11,6 +11,6 @@ import java.util.Optional;
 @RepositoryRestResource(collectionResourceRel = "users", path = "users")
 public interface UsersRepository
     extends PagingAndSortingRepository<Users, Long> {
-    Optional<Users> findByEmail(String email);
+    Optional<Users> findByAccountId(String accountId);
     List<Users> findByAuthorshipStatus(String status);
 }

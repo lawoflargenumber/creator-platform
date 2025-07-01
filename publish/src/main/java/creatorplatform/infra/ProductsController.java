@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 //<<< Clean Arch / Inbound Adaptor
 
 @RestController
+// @RequestMapping(value="/products")
 @Transactional
 public class ProductsController {
 
@@ -18,7 +19,7 @@ public class ProductsController {
     private ProductsRepository productsRepository;
 
     @RequestMapping(
-        value = "/products/{id}/trackview",
+        value = "/{id}/trackview",
         method = RequestMethod.PUT,
         produces = "application/json;charset=UTF-8"
     )
@@ -35,27 +36,27 @@ public class ProductsController {
         productsRepository.save(products);
     }
 
-    @GetMapping("/products/literature")
+    @GetMapping("/literature")
     public List<ProductSummaryDto> getLiteratureProducts() {
         return getProductsByCategory("문학");
     }
 
-    @GetMapping("/products/economy")
+    @GetMapping("/economy")
     public List<ProductSummaryDto> getEconomyProducts() {
         return getProductsByCategory("경제");
     }
 
-    @GetMapping("/products/selfdevelopment")
+    @GetMapping("/selfdevelopment")
     public List<ProductSummaryDto> getSelfDevelopmentProducts() {
         return getProductsByCategory("자기계발");
     }
 
-    @GetMapping("/products/lifestyle")
+    @GetMapping("/lifestyle")
     public List<ProductSummaryDto> getLifestyleProducts() {
         return getProductsByCategory("라이프스타일");
     }
 
-    @GetMapping("/products/others")
+    @GetMapping("/others")
     public List<ProductSummaryDto> getOthersProducts() {
         return getProductsByCategory("기타");
     }
@@ -75,7 +76,7 @@ public class ProductsController {
             .collect(Collectors.toList());
     }
 
-    @GetMapping("/products/bestsellers")
+    @GetMapping("/bestsellers")
     public List<ProductSummaryDto> getBestSellers() {
         return productsRepository.findByIsBestsellerTrueOrderByViewsDesc().stream()
             .map(p -> new ProductSummaryDto(
@@ -90,7 +91,7 @@ public class ProductsController {
             .collect(Collectors.toList());
     }
 
-    @GetMapping("/products/{id}")
+    @GetMapping("/{id}")
     public ProductDetailDto getProductDetail(@PathVariable Long id) throws Exception {
         Products product = productsRepository.findById(id)
             .orElseThrow(() -> new Exception("No product found"));
@@ -108,7 +109,7 @@ public class ProductsController {
         );
     }
 
-    @GetMapping("/products/{id}/content")
+    @GetMapping("/{id}/content")
     public ProductContentDto getProductContent(@PathVariable Long id) throws Exception {
         Products product = productsRepository.findById(id)
             .orElseThrow(() -> new Exception("No product found"));
@@ -122,7 +123,7 @@ public class ProductsController {
         );
     }
 
-    @GetMapping("/products/all")
+    @GetMapping("/all")
     public List<ProductSummaryDto> getAllProductsSorted() {
         List<Products> productsList = productsRepository.findAllByOrderByIsBestsellerDescPublishedAtDesc();
         return productsList.stream()

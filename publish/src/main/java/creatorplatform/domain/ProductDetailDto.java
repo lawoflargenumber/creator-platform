@@ -1,4 +1,4 @@
-package creatorplatform.infra;
+package creatorplatform.domain;
 
 import java.util.Date;
 import lombok.AllArgsConstructor;
