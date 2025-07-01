@@ -3,6 +3,8 @@ package creatorplatform.domain;
 import creatorplatform.domain.*;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+
+import java.util.List;
 import java.util.Optional;
 
 //<<< PoEAA / Repository
@@ -10,4 +12,5 @@ import java.util.Optional;
 public interface UsersRepository
     extends PagingAndSortingRepository<Users, Long> {
     Optional<Users> findByEmail(String email);
+    List<Users> findByAuthorshipStatus(String status);
 }
