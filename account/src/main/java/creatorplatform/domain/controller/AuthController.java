@@ -1,39 +1,43 @@
 package creatorplatform.controller;
 
 import creatorplatform.model.User;
+import creatorplatform.domain.RefreshToken;
 import creatorplatform.repository.UserRepository;
 import creatorplatform.repository.RefreshTokenRepository;
 import creatorplatform.security.JwtUtils;
-import creatorplatform.domain.RefreshToken;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.time.Instant;
 import java.util.UUID;
 
-@RestController @RequestMapping("/auth") @RequiredArgsConstructor
+@RestController
+@RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthController {
     private final UserRepository userRepo;
     private final RefreshTokenRepository tokenRepo;
     private final JwtUtils jwtUtils;
 
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest req) {
-        if (userRepo.existsByEmail(req.getEmail())) {
-            return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body("Email already in use");
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest req) {
+        var userOpt = userRepo.findByEmail(req.getEmail());
+        if (userOpt.isEmpty() || !userOpt.get().getPassword().equals(req.getPassword())) {
+            return ResponseEntity.badRequest().body(null);
         }
-        User user = User.builder()
-            .email(req.getEmail())
-            .password(req.getPassword())
-            .nickname(req.getNickname())
-            .marketingConsent(Boolean.TRUE.equals(req.getMarketingConsent()))
-            .isAuthor(false)
-            .points(0)
-            .build();
-        User saved = userRepo.save(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+        User user = userOpt.get();
+        String access = jwtUtils.generateJwtToken(user.getEmail());
+        String refresh = UUID.randomUUID().toString();
+        tokenRepo.deleteByUserId(user.getId());
+        tokenRepo.save(RefreshToken.builder()
+            .user(user).token(refresh)
+            .issuedAt(Instant.now())
+            .expiresAt(Instant.now().plusMillis(jwtUtils.getRefreshExpirationMs()))
+            .revoked(false).build());
+
+        // Return tokens along with user info
+        return ResponseEntity.ok(new LoginResponse(access, refresh, user));
     }
-    // other methods unchanged
+
+    // ... existing /refresh and /logout methods unchanged ...
 }
