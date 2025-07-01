@@ -92,4 +92,3 @@ services:
     volumes:
       - ./ai:/usr/src
       - ./maven-repo:/root/.m2
-      
