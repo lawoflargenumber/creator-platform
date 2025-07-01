@@ -1,10 +1,14 @@
 package creatorplatform.infra;
 
+import creatorplatform.domain.command.RegisterUserCommand;
 import creatorplatform.domain.*;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
+
+import creatorplatform.domain.service.UserCommandService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 // @RequestMapping(value="/users")
 @Transactional
+@RequiredArgsConstructor
 public class UsersController {
+
+    private final UserCommandService userCommandService;
 
     @Autowired
     UsersRepository usersRepository;
@@ -31,10 +38,8 @@ public class UsersController {
         @RequestBody RegisterUserCommand registerUserCommand
     ) throws Exception {
         System.out.println("##### /users/registerUser  called #####");
-        Users users = new Users();
-        users.registerUser(registerUserCommand);
-        usersRepository.save(users);
-        return users;
+
+        return userCommandService.handleRegisterUser(registerUserCommand);
     }
 
     @RequestMapping(

@@ -46,12 +46,12 @@ public class Users {
     }
 
     //<<< Clean Arch / Port Method
-    public void registerUser(RegisterUserCommand registerUserCommand) {
-        //implement business logic here:
-
-        UserRegistered userRegistered = new UserRegistered(this);
-        userRegistered.publishAfterCommit();
-    }
+//    public void registerUser(RegisterUserCommand registerUserCommand) {
+//        //implement business logic here:
+//
+//        UserRegistered userRegistered = new UserRegistered(this);
+//        userRegistered.publishAfterCommit();
+//    }
 
     //>>> Clean Arch / Port Method
     //<<< Clean Arch / Port Method

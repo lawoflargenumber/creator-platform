@@ -15,7 +15,7 @@ public class UserCommandService {
     @Autowired private UsersRepository usersRepository;
     @Autowired private ApplicationEventPublisher publisher;
 
-    public void handleRegisterUser(RegisterUserCommand cmd) {
+    public Users handleRegisterUser(RegisterUserCommand cmd) {
         Users user = new Users();
         user.setAccountId(cmd.id);
         user.setNickname(cmd.nickname);
@@ -23,8 +23,7 @@ public class UserCommandService {
         user.setAuthorshipStatus("DEFAULT");
         user.setSubscriber(false);
         user.setAgreedToMarketing(cmd.agreedToMarketing);
-        usersRepository.save(user);
-        publisher.publishEvent(new UserRegisteredEvent(cmd.id, cmd.nickname));
+        return usersRepository.save(user);
     }
 
     public void handleApplyForAuthorship(ApplyForAuthorshipCommand cmd) {
