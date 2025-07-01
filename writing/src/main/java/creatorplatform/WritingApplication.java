@@ -1,3 +1,4 @@
+//writing/src/main/java/creatorplatform/WritingApplication.java
 package creatorplatform;
 
 import creatorplatform.config.kafka.KafkaProcessor;

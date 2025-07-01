@@ -11,4 +11,6 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 //<<< PoEAA / Repository
 @RepositoryRestResource(collectionResourceRel = "drafts", path = "drafts")
 public interface DraftsRepository
-    extends PagingAndSortingRepository<Drafts, Long> {}
+    extends PagingAndSortingRepository<Drafts, Long> {
+    List<Drafts> findByAuthorId(Long authorId);
+}

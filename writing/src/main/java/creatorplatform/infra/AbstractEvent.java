@@ -1,3 +1,4 @@
+// creator-platform/writing/src/main/java/creatorplatform/infra/AbstractEvent.java
 package creatorplatform.infra;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -11,10 +12,12 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.MimeTypeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 //<<< Clean Arch / Outbound Adaptor
 public class AbstractEvent {
-
+    private static final Logger log = LoggerFactory.getLogger(AbstractEvent.class);
     String eventType;
     Long timestamp;
 
@@ -29,24 +32,17 @@ public class AbstractEvent {
     }
 
     public void publish() {
-        /**
-         * spring streams 방식
-         */
-        KafkaProcessor processor = WritingApplication.applicationContext.getBean(
-            KafkaProcessor.class
-        );
-        MessageChannel outputChannel = processor.outboundTopic();
+        KafkaProcessor processor = WritingApplication.applicationContext.getBean(KafkaProcessor.class);
+        MessageChannel out = processor.outboundTopic();
 
-        outputChannel.send(
-            MessageBuilder
-                .withPayload(this)
-                .setHeader(
-                    MessageHeaders.CONTENT_TYPE,
-                    MimeTypeUtils.APPLICATION_JSON
-                )
-                .setHeader("type", getEventType())
+        out.send(
+            MessageBuilder.withPayload(this) // ★ 직렬화 자동
+                .setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON)
+                .setHeader("type", getEventType()) // 이벤트 타입 헤더
                 .build()
         );
+
+        log.info("🚀 Published event -> {}", this); // ← 무조건 로그로 확인
     }
 
     public void publishAfterCommit() {
@@ -93,4 +89,5 @@ public class AbstractEvent {
         return json;
     }
 }
+
 //>>> Clean Arch / Outbound Adaptor

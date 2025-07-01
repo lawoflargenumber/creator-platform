@@ -65,5 +65,22 @@ public class PolicyHandler {
         // Application Service로 비즈니스 프로세스 위임
         userAccessProfileService.processSubscriptionActivation(event);
     }
+
+    /**
+     * 작가 신청 이벤트 라우팅
+     * Account 서비스 → View 서비스 이벤트 전달
+     */
+    @StreamListener(
+        value = KafkaProcessor.INPUT,
+        condition = "headers['type']=='AuthorshipAppliedEvent'"
+    )
+    public void wheneverAuthorshipApplied_UpdateAuthorProfile(
+        @Payload AuthorshipApplied authorshipApplied
+    ) {
+        AuthorshipApplied event = authorshipApplied;
+
+        // Application Service로 비즈니스 프로세스 위임
+        userAccessProfileService.processAuthorshipApplication(event);
+    }
 }
 //>>> Clean Arch / Inbound Adaptor
