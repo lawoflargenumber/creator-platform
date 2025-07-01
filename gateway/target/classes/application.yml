@@ -56,23 +56,23 @@ spring:
         - id: account
           uri: http://account:8082
           predicates:
-            - Path=/users/**, 
+            - Path=/account/**, 
         - id: writing
           uri: http://writing:8081
           predicates:
-            - Path=/drafts/**, 
+            - Path=/writing/**, 
         - id: publish
           uri: http://publish:8084
           predicates:
-            - Path=/products/**
+            - Path=/publish/**
         - id: view
           uri: http://view:8085
           predicates:
-            - Path=/userAccessProfiles/**, /viewHistories/**
+            - Path=/view/**, /viewHistories/**
         - id: ai
           uri: http://ai:8086
           predicates:
-            - Path=/undefined/**, 
+            - Path=/ai/**, 
         - id: frontend
           uri: http://frontend:8080
           predicates:

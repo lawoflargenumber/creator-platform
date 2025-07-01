@@ -20,7 +20,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
           .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and().authorizeRequests()
-          .antMatchers("/auth/**", "/users/register").permitAll()
+          .antMatchers("/auth/**", "/users/register", "/users/registeruser").permitAll()
           .anyRequest().authenticated()
         .and().addFilterBefore(
             new JwtAuthFilter(jwtUtils, userDetailsService),
