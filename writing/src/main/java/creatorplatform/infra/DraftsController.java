@@ -75,7 +75,7 @@ public class DraftsController {
     @GetMapping("author/{authorId}")
     public Iterable<Drafts> listDrafts(@PathVariable Long authorId) {
         // 전진구 수정: DRAFT 상태만 조회
-        return repo.findByAuthorIdAndStatus(authorId, "DRAFT");
+        return repo.findByAuthorIdAndStatus(authorId, Drafts.Status.DRAFT);
     }
 
     // ---------- 단건 조회 ----------
