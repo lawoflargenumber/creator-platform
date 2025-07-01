@@ -71,10 +71,11 @@ public class DraftsController {
     }
 
 
-    // ---------- 전체 목록 조회 ----------
+    // ---------- 전체 목록 조회 (DRAFT 상태만) ----------
     @GetMapping("author/{authorId}")
     public Iterable<Drafts> listDrafts(@PathVariable Long authorId) {
-        return repo.findByAuthorId(authorId);
+        // 전진구 수정: DRAFT 상태만 조회
+        return repo.findByAuthorIdAndStatus(authorId, "DRAFT");
     }
 
     // ---------- 단건 조회 ----------
