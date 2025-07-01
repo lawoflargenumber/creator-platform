@@ -16,15 +16,24 @@ public class AiGeneratedContent {
 
     @Id
     private Long id;
+
     private Long authorId;
+
     private String authorNickname;
+
     private String title;
+
     @Lob
     private String content;
+
+    @Lob
     private String summary;
+
     private Integer price;
+
     @Lob
     private String coverImageUrl;
+
     @Enumerated(EnumType.STRING)
     private Category category;
 

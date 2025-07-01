@@ -58,11 +58,14 @@ public class AiController {
 
     @PostMapping("/{id}/complete")
     @Transactional
-    public ResponseEntity<Void> completeGeneration(@PathVariable Long id) {
-        return repository.findById(id).map(process -> {
+    public ResponseEntity<Void> completeGeneration(
+            @PathVariable Long id,
+            @RequestBody CompleteRequest request
+    ) {return repository.findById(id).map(process -> {
+            process.setSummary(request.getSummary());
             process.completeGeneration();
             repository.save(process);
-            return ResponseEntity.ok().<Void>build(); // 성공(200 OK) 응답
+            return ResponseEntity.ok().<Void>build();
         }).orElse(ResponseEntity.notFound().build());
     }
 
@@ -70,6 +73,12 @@ public class AiController {
     @Getter
     public static class RegenerationRequest {
         private String userPrompt;
+    }
+
+    @Setter
+    @Getter
+    public static class CompleteRequest {
+        private String summary;
     }
 
     // @PostMapping("/test")
