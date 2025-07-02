@@ -49,6 +49,9 @@ public class AiController {
     ) {
         return repository.findById(id)
                 .map(entity -> {
+                    entity.setStatus(ProcessingStatus.PENDING);
+                    repository.saveAndFlush(entity);
+
                     aiService.regenerateContent(id, request.getUserPrompt());
                     return ResponseEntity.ok(AiContentResponse.fromEntity(entity));
                 })

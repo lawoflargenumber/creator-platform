@@ -42,9 +42,6 @@ public class AiService {
     public void regenerateContent(Long id, String userPrompt) {
         log.info("Starting content regeneration for id: {}", id);
         repository.findById(id).ifPresent(contentEntity -> {
-            contentEntity.setStatus(ProcessingStatus.PENDING);
-            repository.saveAndFlush(contentEntity);
-
             AiGeneratorPort.AiGeneratedResult aiResult = aiGenerator.regenerate(
                     contentEntity.getTitle(),
                     contentEntity.getContent(),
