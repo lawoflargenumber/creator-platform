@@ -1,6 +1,7 @@
 package creatorplatform.domain;
 
 import creatorplatform.domain.*;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
@@ -12,5 +13,5 @@ import java.util.Optional;
     path = "aiGeneratedContents"
 )
 public interface AiGeneratedContentRepository
-    extends PagingAndSortingRepository<AiGeneratedContent, Long> {
+    extends JpaRepository<AiGeneratedContent, Long> {
 }
