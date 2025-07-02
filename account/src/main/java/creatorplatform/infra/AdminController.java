@@ -1,23 +1,27 @@
 package creatorplatform.infra;
 
+import creatorplatform.domain.AccpetApplicationCommand;
 import creatorplatform.domain.Users;
 import creatorplatform.domain.UsersRepository;
+import creatorplatform.domain.service.UserCommandService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/admin")
+@RequiredArgsConstructor
 public class AdminController {
 
-    @Autowired
-    private UsersRepository repository;
+    private final UsersRepository repository;
+    private final UserCommandService userCommandService;
 
     @GetMapping("/requests")
     public ResponseEntity<List<?>> getPendingAuthors() {
@@ -36,5 +40,20 @@ public class AdminController {
                 .map(PendingAuthorResponse::fromEntity)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @RequestMapping(
+            value = "/requests/{id}/approve",
+            method = RequestMethod.POST,
+            produces = "application/json;charset=UTF-8"
+    )
+    public ResponseEntity<?> acceptApplication(
+            @PathVariable(value = "id") Long id,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws Exception {
+        System.out.println("##### /users/accpetApplication  called #####");
+        userCommandService.handleAcceptApplication(id);
+        return ResponseEntity.ok().build();
     }
 }
