@@ -19,6 +19,15 @@ public class GenerationCompleted extends AbstractEvent {
 
     public GenerationCompleted(AiGeneratedContent aggregate) {
         super(aggregate);
+        this.id = aggregate.getId();
+        this.authorId = aggregate.getAuthorId();
+        this.authorNickname = aggregate.getAuthorNickname();
+        this.title = aggregate.getTitle();
+        this.content = aggregate.getContent();
+        this.summary = aggregate.getSummary();
+        this.price = aggregate.getPrice();
+        this.coverImageUrl = aggregate.getCoverImageUrl();
+        this.category = aggregate.getCategory();
     }
 
     public GenerationCompleted() {
