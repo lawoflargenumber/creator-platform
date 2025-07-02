@@ -7,6 +7,8 @@ import creatorplatform.domain.repository.RefreshTokenRepository;
 import creatorplatform.domain.security.JwtUtils;
 import creatorplatform.domain.controller.JwtResponse;
 import creatorplatform.infra.LoginRequest;
+import creatorplatform.infra.LoginResponse;
+import creatorplatform.infra.LoginUserDto;
 import creatorplatform.domain.aggregate.RegisteredUser;
 import creatorplatform.domain.command.*;
 import creatorplatform.domain.command.ApplyForAuthorshipCommand;
@@ -93,7 +95,7 @@ public class UserCommandService {
     //     usersRepository.save(user);
     //}
     @Transactional
-    public JwtResponse handleLogin(LoginRequest request) {
+    public LoginResponse handleLogin(LoginRequest request) {
         Optional<Users> userOpt = usersRepository.findByAccountId(request.getAccountId());
         if (userOpt.isEmpty() || !userOpt.get().getPassword().equals(request.getPassword())) {
             throw new RuntimeException("Invalid credentials");
@@ -115,6 +117,27 @@ public class UserCommandService {
         refreshTokenRepository.deleteByUserId(user.getId());
         refreshTokenRepository.save(rt);
         
-        return new JwtResponse(accessToken, refreshTokenStr);
+        LoginUserDto loginUserDto = LoginUserDto.fromEntity(user);
+        
+        return new LoginResponse(accessToken, refreshTokenStr, loginUserDto);
+    }
+
+    @Transactional
+    public JwtResponse handleRefreshToken(String refreshToken) {
+        Optional<RefreshToken> rtOpt = refreshTokenRepository.findByToken(refreshToken);
+        if (rtOpt.isEmpty() || rtOpt.get().isRevoked() || rtOpt.get().getExpiresAt().isBefore(Instant.now())) {
+            throw new RuntimeException("Invalid refresh token");
+        }
+        
+        RefreshToken rt = rtOpt.get();
+        String newAccessToken = jwtUtils.generateJwtToken(rt.getUser().getAccountId());
+        String newRefreshTokenStr = UUID.randomUUID().toString();
+        
+        rt.setToken(newRefreshTokenStr);
+        rt.setIssuedAt(Instant.now());
+        rt.setExpiresAt(Instant.now().plusMillis(jwtUtils.getRefreshExpirationMs()));
+        refreshTokenRepository.save(rt);
+        // AccessToken 과 RefreshToken 을 모두 발급해주는 것이 맞는지 논의가 필요함.
+        return new JwtResponse(newAccessToken, newRefreshTokenStr);
     }
 }
