@@ -2,6 +2,7 @@ package creatorplatform.domain.service;
 
 import creatorplatform.domain.Users;
 import creatorplatform.domain.UserRegistered;
+import creatorplatform.domain.RegisterUserCommand;
 import creatorplatform.domain.aggregate.RegisteredUser;
 import creatorplatform.domain.command.*;
 import creatorplatform.domain.event.*;
@@ -19,12 +20,12 @@ public class UserCommandService {
 
     public void handleRegisterUser(RegisterUserCommand cmd) {
         Users user = new Users();
-        user.setAccountId(cmd.id);
-        user.setNickname(cmd.nickname);
-        user.setPassword(cmd.password);
+        user.setAccountId(cmd.getAccountId());
+        user.setNickname(cmd.getNickname());
+        user.setPassword(cmd.getPassword());
         user.setAuthorshipStatus("DEFAULT");
         user.setSubscriber(false);
-        user.setAgreedToMarketing(cmd.agreedToMarketing);
+        user.setAgreedToMarketing(cmd.getAgreedToMarketing());
         user.setCreatedAt(new Date()); // 생성 시간 설정
         usersRepository.save(user);
         
