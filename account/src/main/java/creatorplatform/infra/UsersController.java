@@ -33,7 +33,7 @@ public class UsersController {
 
     @RequestMapping(
         value = "/users/{id}/apply",
-        method = RequestMethod.PUT,
+        method = RequestMethod.POST,
         produces = "application/json;charset=UTF-8"
     )
     public ResponseEntity<?> applyForAuthorship(
@@ -70,7 +70,7 @@ public class UsersController {
 
     @RequestMapping(
         value = "/users/{id}/subscribe",
-        method = RequestMethod.PUT,
+        method = RequestMethod.POST,
         produces = "application/json;charset=UTF-8"
     )
     public ResponseEntity<?> startSubscribe(

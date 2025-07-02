@@ -11,6 +11,7 @@ import org.apache.tomcat.jni.Local;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -21,6 +22,7 @@ public class UserCommandService {
     @Autowired private UsersRepository usersRepository;
     @Autowired private ApplicationEventPublisher publisher;
 
+    @Transactional
     public void handleRegisterUser(RegisterUserCommand cmd) {
         Users user = new Users();
         user.setAccountId(cmd.getAccountId());
@@ -36,6 +38,7 @@ public class UserCommandService {
         userRegistered.publishAfterCommit(); // 트랜잭션 커밋 후 발행
     }
 
+    @Transactional
     public void handleApplyForAuthorship(Long id, ApplyForAuthorshipCommand cmd) {
 
         Users user = usersRepository.findById(id).orElseThrow();
@@ -59,6 +62,7 @@ public class UserCommandService {
         return startDate.plusMonths(1);
     }
 
+    @Transactional
     public void handleAcceptApplication(Long id) {
         Users user = usersRepository.findById(id).orElseThrow();
         user.setAuthorshipStatus("ACCEPTED");
@@ -71,11 +75,11 @@ public class UserCommandService {
 //        user.setAuthorshipStatus("DECLINED");
 //        usersRepository.save(user);
 //    }
-
-    public void handleUpdateUser(UpdateUserCommand cmd) {
-        Users user = usersRepository.findById(Long.parseLong(cmd.id)).orElseThrow();
-        user.setNickname(cmd.nickname);
-        user.setAgreedToMarketing(cmd.agreedToMarketing);
-        usersRepository.save(user);
-    }
+    
+    // public void handleUpdateUser(UpdateUserCommand cmd) {
+    //     Users user = usersRepository.findById(Long.parseLong(cmd.id)).orElseThrow();
+    //     user.setNickname(cmd.nickname);
+    //     user.setAgreedToMarketing(cmd.agreedToMarketing);
+    //     usersRepository.save(user);
+    //}
 }

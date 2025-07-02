@@ -43,8 +43,8 @@ public class AdminController {
     }
 
     @RequestMapping(
-            value = "/admin/requests{id}/approve",
-            method = RequestMethod.PUT,
+            value = "/requests/{id}/approve",
+            method = RequestMethod.POST,
             produces = "application/json;charset=UTF-8"
     )
     public ResponseEntity<?> acceptApplication(
