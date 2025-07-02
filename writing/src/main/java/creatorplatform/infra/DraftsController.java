@@ -18,18 +18,11 @@ public class DraftsController {
     private final CheckAuthorsRepository checkAuthorsRepository;
 
     // ---------- 드래프트 저장 ----------
+    private final DraftsService draftsService;
+
     @PostMapping("/savedraft")
     public EntityModel<Drafts> saveDraft(@RequestBody SaveDraftCommand cmd) {
-
-        String nickname = checkAuthorsRepository.findById(cmd.getAuthorId())
-                .map(CheckAuthors::getNickname)
-                .orElse(null);
-        cmd.setAuthorNickname(nickname);
-
-        Drafts draft = new Drafts();
-        draft.saveDraft(cmd);
-        Drafts saved = repo.save(draft);
-
+        Drafts saved = draftsService.saveDraft(cmd);
         return EntityModel.of(saved,
             linkTo(methodOn(DraftsController.class).getDraft(saved.getId())).withSelfRel(),
             linkTo(methodOn(DraftsController.class).listDrafts(saved.getAuthorId())).withRel("drafts")
