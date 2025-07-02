@@ -42,7 +42,7 @@ public class UserCommandService {
         user.setAuthorshipStatus("PENDING");
         user.setAuthorsProfile(cmd.authorsProfile);
         user.setAuthorNickname(cmd.authorNickname);
-        publisher.publishEvent(new AuthorshipAppliedEvent(String.valueOf(id), user.getAuthorshipStatus(), user.getAuthorsProfile()));
+        publisher.publishEvent(new AuthorshipApplied(user));
 
         usersRepository.save(user);
     }
@@ -63,14 +63,14 @@ public class UserCommandService {
         Users user = usersRepository.findById(id).orElseThrow();
         user.setAuthorshipStatus("ACCEPTED");
         usersRepository.save(user);
-        publisher.publishEvent(new AuthorshipAcceptedEvent(String.valueOf(id), user.getAuthorNickname()));
+        publisher.publishEvent(new AuthorshipAccepted(user));
     }
 
-    public void handleDeclineApplication(DeclineApplicationCommand cmd) {
-        Users user = usersRepository.findById(Long.parseLong(cmd.id)).orElseThrow();
-        user.setAuthorshipStatus("DECLINED");
-        usersRepository.save(user);
-    }
+//    public void handleDeclineApplication(DeclineApplicationCommand cmd) {
+//        Users user = usersRepository.findById(Long.parseLong(cmd.id)).orElseThrow();
+//        user.setAuthorshipStatus("DECLINED");
+//        usersRepository.save(user);
+//    }
 
     public void handleUpdateUser(UpdateUserCommand cmd) {
         Users user = usersRepository.findById(Long.parseLong(cmd.id)).orElseThrow();

@@ -19,7 +19,15 @@ public class UserRegistered extends AbstractEvent {
     private String authorNickname;
     
     public UserRegistered(Users aggregate) {
+
         super(aggregate);
+
+        this.id = aggregate.getId();
+        this.nickname = aggregate.getNickname();
+        this.accountId = aggregate.getAccountId();
+        this.authorshipStatus = aggregate.getAuthorshipStatus();
+        this.authorsProfile = aggregate.getAuthorsProfile();
+        this.authorNickname = aggregate.getAuthorNickname();
     }
 
     public UserRegistered() {
