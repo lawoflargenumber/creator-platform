@@ -36,7 +36,7 @@ public class AuthController {
         userCommandService.handleRegisterUser(req);
         Users savedUser = usersRepository.findByAccountId(req.getAccountId())
             .orElseThrow(() -> new RuntimeException("User creation failed"));
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/login")
