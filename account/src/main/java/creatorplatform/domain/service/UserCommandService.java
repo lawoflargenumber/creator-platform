@@ -59,35 +59,12 @@ public class UserCommandService {
         usersRepository.save(user);
     }
 
-
     @Transactional
-    public void handleStartSubscribe(StartSubscribeCommand cmd) {
-        Users user = usersRepository.findById(Long.parseLong(cmd.id)).orElseThrow();
     public LocalDateTime handleStartSubscribe(Long id) {
         Users user = usersRepository.findById(id).orElseThrow();
         user.setSubscriber(true);
         usersRepository.save(user);
 
-    @Transactional
-    public void handleAcceptApplication(AcceptApplicationCommand cmd) {
-        Users user = usersRepository.findById(Long.parseLong(cmd.id)).orElseThrow();
-        user.setAuthorshipStatus("ACCEPTED");
-        usersRepository.save(user);
-        publisher.publishEvent(new AuthorshipAcceptedEvent(cmd.id, user.getAuthorNickname()));
-    }
-
-    @Transactional
-    public void handleDeclineApplication(DeclineApplicationCommand cmd) {
-        Users user = usersRepository.findById(Long.parseLong(cmd.id)).orElseThrow();
-        user.setAuthorshipStatus("DECLINED");
-        usersRepository.save(user);
-    }
-
-    @Transactional
-    public void handleUpdateUser(UpdateUserCommand cmd) {
-        Users user = usersRepository.findById(Long.parseLong(cmd.id)).orElseThrow();
-        user.setNickname(cmd.nickname);
-        user.setAgreedToMarketing(cmd.agreedToMarketing);
         SubscriptionStarted event = new SubscriptionStarted(user);
         LocalDateTime startDate = event.getSubscribtionStartedAt();
         publisher.publishEvent(event);
@@ -103,6 +80,18 @@ public class UserCommandService {
         publisher.publishEvent(new AuthorshipAccepted(user));
     }
 
+//    public void handleDeclineApplication(DeclineApplicationCommand cmd) {
+//        Users user = usersRepository.findById(Long.parseLong(cmd.id)).orElseThrow();
+//        user.setAuthorshipStatus("DECLINED");
+//        usersRepository.save(user);
+//    }
+    
+    // public void handleUpdateUser(UpdateUserCommand cmd) {
+    //     Users user = usersRepository.findById(Long.parseLong(cmd.id)).orElseThrow();
+    //     user.setNickname(cmd.nickname);
+    //     user.setAgreedToMarketing(cmd.agreedToMarketing);
+    //     usersRepository.save(user);
+    //}
     @Transactional
     public JwtResponse handleLogin(LoginRequest request) {
         Optional<Users> userOpt = usersRepository.findByAccountId(request.getAccountId());
@@ -128,17 +117,4 @@ public class UserCommandService {
         
         return new JwtResponse(accessToken, refreshTokenStr);
     }
-
-//    public void handleDeclineApplication(DeclineApplicationCommand cmd) {
-//        Users user = usersRepository.findById(Long.parseLong(cmd.id)).orElseThrow();
-//        user.setAuthorshipStatus("DECLINED");
-//        usersRepository.save(user);
-//    }
-    
-    // public void handleUpdateUser(UpdateUserCommand cmd) {
-    //     Users user = usersRepository.findById(Long.parseLong(cmd.id)).orElseThrow();
-    //     user.setNickname(cmd.nickname);
-    //     user.setAgreedToMarketing(cmd.agreedToMarketing);
-    //     usersRepository.save(user);
-    //}
 }
