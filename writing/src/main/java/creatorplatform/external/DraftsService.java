@@ -20,18 +20,14 @@ public class DraftsService {
     }
 
     public Drafts saveDraft(SaveDraftCommand cmd) {
-        // Read Model 또는 외부 API를 통해 authorNickname 조회
+    // Read Model 또는 외부 API를 통해 authorNickname 조회
         String nickname = checkAuthorsRepository.findById(cmd.getAuthorId())
                 .map(CheckAuthors::getNickname)
                 .orElse(null);
 
-        // 외부 API를 사용하려면 아래 코드로 대체 가능
-        // String nickname = authorService.getAuthorNickname(cmd.getAuthorId());
-
-        cmd.setAuthorNickname(nickname);
-
         Drafts draft = new Drafts();
+        draft.setAuthorNickname(nickname); // Drafts 객체에 직접 설정
         draft.saveDraft(cmd);
         return repo.save(draft);
-    }
+}
 }
