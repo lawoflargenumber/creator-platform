@@ -4,8 +4,12 @@ import creatorplatform.domain.Users;
 import creatorplatform.domain.RefreshToken;
 import creatorplatform.domain.UsersRepository;
 import creatorplatform.domain.repository.RefreshTokenRepository;
-import creatorplatform.domain.controller.RegisterRequest;
+import creatorplatform.domain.RegisterUserCommand;
 import creatorplatform.domain.security.JwtUtils;
+import creatorplatform.domain.service.UserCommandService;
+import creatorplatform.domain.controller.LoginRequest;
+import creatorplatform.domain.controller.JwtResponse;
+import creatorplatform.domain.controller.TokenRefreshRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -20,25 +24,19 @@ public class AuthController {
     private final UsersRepository usersRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtUtils jwtUtils;
+    private final UserCommandService userCommandService;
 
     @PostMapping("/register")
-    public ResponseEntity<Users> register(@RequestBody RegisterRequest req) {
-        if (usersRepository.findByAccountId(req.getEmail()).isPresent()) {
+    public ResponseEntity<Users> register(@RequestBody RegisterUserCommand req) {
+        if (usersRepository.findByAccountId(req.getAccountId()).isPresent()) {
             return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(null);
         }
-        // Users 엔티티로 생성
-        Users user = new Users();
-        user.setAccountId(req.getEmail());
-        user.setPassword(req.getPassword());
-        user.setNickname(req.getNickname());
-        user.setAgreedToMarketing(req.getMarketingConsent());
-        user.setAuthorshipStatus("DEFAULT");
-        user.setSubscriber(false);
-        
-        Users saved = usersRepository.save(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+        userCommandService.handleRegisterUser(req);
+        Users savedUser = usersRepository.findByAccountId(req.getAccountId())
+            .orElseThrow(() -> new RuntimeException("User creation failed"));
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
 
     @PostMapping("/login")

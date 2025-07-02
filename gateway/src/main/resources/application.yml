@@ -12,7 +12,7 @@ spring:
         - id: account
           uri: http://localhost:8082
           predicates:
-            - Path=/users/**, 
+            - Path=/users/**, /auth/**
         - id: writing
           uri: http://localhost:8083
           predicates:
@@ -56,7 +56,7 @@ spring:
         - id: account
           uri: http://account:8082
           predicates:
-            - Path=/users/**, 
+            - Path=/users/**, /auth/**
         - id: writing
           uri: http://writing:8081
           predicates:
@@ -94,3 +94,9 @@ spring:
 
 server:
   port: 8080
+
+# JWT 설정 추가
+jwt:
+  secret: JwtSecretKey1234567890
+  expirationMs: 900000
+  refreshExpirationMs: 604800000
