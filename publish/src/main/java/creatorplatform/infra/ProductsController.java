@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 //<<< Clean Arch / Inbound Adaptor
 
 @RestController
-// @RequestMapping(value="/products")
+@RequestMapping(value="/products")
 @Transactional
 public class ProductsController {
 
