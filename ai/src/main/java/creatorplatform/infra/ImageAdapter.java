@@ -38,8 +38,8 @@ public class ImageAdapter extends AbstractOpenAiAdapter{
 
     private String createImagePromptFrom(String title, String summary, String category, String userPrompt) {
         return String.format(
-                "Create a professional, high-quality book cover for an online content platform. " +
-                "The book belongs to the '%s' category, so the image must have an appropriate tone" +
+                "Create a professional, high-quality cover image for an online content platform. " +
+                "The content belongs to the '%s' category, so the image must have an appropriate tone" +
                 "\nThe main title of the book is '%s'. This title MUST be clearly visible " +
                 "Place the title in the upper half of the image. " +
                 "\n--- summary of the content---\n%s" +
