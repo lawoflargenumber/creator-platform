@@ -56,7 +56,7 @@ spring:
         - id: account
           uri: http://account:8082
           predicates:
-            - Path=/users/**, /auth/**
+            - Path=/users/**, /auth/**, /admin/**
         - id: writing
           uri: http://writing:8081
           predicates:

@@ -7,7 +7,7 @@ import creatorplatform.domain.repository.RefreshTokenRepository;
 import creatorplatform.domain.RegisterUserCommand;
 import creatorplatform.domain.security.JwtUtils;
 import creatorplatform.domain.service.UserCommandService;
-import creatorplatform.domain.controller.LoginRequest;
+import creatorplatform.infra.LoginRequest;
 import creatorplatform.domain.controller.JwtResponse;
 import creatorplatform.domain.controller.TokenRefreshRequest;
 import lombok.RequiredArgsConstructor;
@@ -41,23 +41,12 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        Optional<Users> userOpt = usersRepository.findByAccountId(request.getEmail());
-        if (userOpt.isEmpty() || !userOpt.get().getPassword().equals(request.getPassword())) {
+        try {
+            JwtResponse response = userCommandService.handleLogin(request);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body("Invalid credentials");
         }
-        Users user = userOpt.get();
-        String accessToken = jwtUtils.generateJwtToken(user.getAccountId());
-        String refreshTokenStr = UUID.randomUUID().toString();
-        RefreshToken rt = RefreshToken.builder()
-                .user(user)
-                .token(refreshTokenStr)
-                .issuedAt(Instant.now())
-                .expiresAt(Instant.now().plusMillis(jwtUtils.getRefreshExpirationMs()))
-                .revoked(false)
-                .build();
-        refreshTokenRepository.deleteByUserId(user.getId());
-        refreshTokenRepository.save(rt);
-        return ResponseEntity.ok(new JwtResponse(accessToken, refreshTokenStr));
     }
 
     @PostMapping("/refresh")

@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Calendar;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 /**
  * Application Service Layer
@@ -167,17 +168,19 @@ public class UserAccessProfileService {
      * @Transactional 없음: 단순 저장 작업으로 Repository 자체 트랜잭션 사용
      */
     public void processUserRegistration(UserRegistered userRegistered) {
-        System.out.println("🎉 UserRegistered 이벤트 수신! userId: " + userRegistered.getId() + ", nickname: " + userRegistered.getNickname());
+        System.out.println("🎉 UserRegistered 이벤트 수신! userId: " + userRegistered.getId() + ", nickname: " + userRegistered.getNickname() + ", accountId: " + userRegistered.getAccountId());
         
         // 비즈니스 규칙: 신규 사용자에게 기본 포인트 100 지급
         UserAccessProfile userAccessProfile = new UserAccessProfile();
-        userAccessProfile.setId(userRegistered.getId());
+        userAccessProfile.setId(userRegistered.getId()); // Account 서비스의 ID 그대로 사용
+        userAccessProfile.setAccountId(userRegistered.getAccountId()); // accountId 설정
+        userAccessProfile.setNickname(userRegistered.getNickname()); // nickname 설정
         userAccessProfile.setPoints(100); // 비즈니스 규칙: 가입 보너스
         userAccessProfile.setIsSubscribed(false); // 기본값: 미구독
         userAccessProfile.setSubscribtionDue(null);
         
         userAccessProfileRepository.save(userAccessProfile);
-        System.out.println("✅ 신규 사용자 생성 완료! userId: " + userRegistered.getId() + ", 포인트: 100");
+        System.out.println("✅ 신규 사용자 생성 완료! userId: " + userRegistered.getId() + ", accountId: " + userRegistered.getAccountId() + ", nickname: " + userRegistered.getNickname() + ", 포인트: 100");
     }
     
     /**

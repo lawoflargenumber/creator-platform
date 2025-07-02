@@ -16,10 +16,8 @@ import java.util.Date;
 public class UserAccessProfile  {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    
-
-private Long id;    
+    // Account 서비스와 ID 동기화를 위해 자동 생성 비활성화
+    private Long id;    
 
 private String accountId;
 
@@ -33,7 +31,7 @@ private Date subscribtionDue;
 
 private String authorshipStatus;
 
-private String autornickname;
+private String authorNickname;
 
 private String authorsProfile;
 
