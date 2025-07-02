@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.Calendar;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestHeader;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * Application Service Layer
@@ -170,12 +172,14 @@ public class UserAccessProfileService {
     public void processUserRegistration(UserRegistered userRegistered) {
         System.out.println("🎉 UserRegistered 이벤트 수신! userId: " + userRegistered.getId() + ", nickname: " + userRegistered.getNickname() + ", accountId: " + userRegistered.getAccountId());
         
-        // 비즈니스 규칙: 신규 사용자에게 기본 포인트 100 지급
+        
         UserAccessProfile userAccessProfile = new UserAccessProfile();
         userAccessProfile.setId(userRegistered.getId()); // Account 서비스의 ID 그대로 사용
         userAccessProfile.setAccountId(userRegistered.getAccountId()); // accountId 설정
         userAccessProfile.setNickname(userRegistered.getNickname()); // nickname 설정
-        userAccessProfile.setPoints(100); // 비즈니스 규칙: 가입 보너스
+        // 비즈니스 규칙: agreedToMarketing 이 true 일 때 5000 포인트 지급, false 일 때 1000 포인트 지급
+        Integer points = userRegistered.getAgreedToMarketing() ? 5000 : 1000;
+        userAccessProfile.setPoints(points); 
         userAccessProfile.setIsSubscribed(false); // 기본값: 미구독
         userAccessProfile.setSubscribtionDue(null);
         
@@ -186,7 +190,7 @@ public class UserAccessProfileService {
     /**
      * 구독 활성화 비즈니스 프로세스
      * 이벤트: SubscriptionStarted (Account → View)
-     * 비즈니스 규칙: 구독 상태 활성화 + 만료일 설정 (1개월)
+     * 비즈니스 규칙: 구독 상태 활성화 + 만료일 설정 (이벤트 시작일 기준 1개월)
      * @Transactional 필수: findById + save 조합으로 데이터 일관성 보장
      */
     @Transactional
@@ -196,12 +200,19 @@ public class UserAccessProfileService {
             // 비즈니스 규칙: 구독 상태 활성화
             userAccessProfile.setIsSubscribed(true);
             
-            // 비즈니스 규칙: 구독 만료일 설정 (한 달 후)
-            Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.MONTH, 1);
-            userAccessProfile.setSubscribtionDue(calendar.getTime());
+            // 비즈니스 규칙: 이벤트의 시작일 기준으로 구독 만료일 설정 (한 달 후)
+            LocalDateTime subscriptionStart = subscriptionStarted.getSubscribtionStartedAt();
+            LocalDateTime subscriptionEnd = subscriptionStart.plusMonths(1);
+            
+            // LocalDateTime을 Date로 변환하여 저장
+            java.util.Date subscriptionDueDate = java.sql.Timestamp.valueOf(subscriptionEnd);
+            userAccessProfile.setSubscribtionDue(subscriptionDueDate);
             
             userAccessProfileRepository.save(userAccessProfile);
+            
+            System.out.println("✅ 구독 활성화 완료! userId: " + subscriptionStarted.getId() + 
+                              ", 시작일: " + subscriptionStart + 
+                              ", 만료일: " + subscriptionEnd);
         });
     }
 
@@ -227,10 +238,61 @@ public class UserAccessProfileService {
         });
     }
 
+    /**
+     * 작가 승인 이벤트 비즈니스 프로세스
+     * 이벤트: AuthorshipAccepted (Account → View)
+     * 비즈니스 규칙: 작가 신청 승인 처리 - authorshipStatus를 "ACCEPTED"로 변경
+     * @Transactional 필수: findById + save 조합으로 데이터 일관성 보장
+     */
+    @Transactional
+    public void processAuthorshipAcceptance(AuthorshipAccepted authorshipAccepted) {
+        System.out.println("AuthorshipAccepted 이벤트 수신! userId: " + authorshipAccepted.getId() + 
+                          ", authorshipStatus: " + authorshipAccepted.getAuthorshipStatus());
+        
+        // 해당 사용자의 작가 승인 상태 업데이트
+        userAccessProfileRepository.findById(authorshipAccepted.getId()).ifPresent(userAccessProfile -> {
+            // 비즈니스 규칙: 작가 신청 승인 처리
+            userAccessProfile.setAuthorshipStatus("ACCEPTED");
+            
+            userAccessProfileRepository.save(userAccessProfile);
+            System.out.println("✅ 작가 승인 처리 완료! userId: " + authorshipAccepted.getId() + 
+                             ", 새로운 status: ACCEPTED");
+        });
+    }
+
     // 가격 조회 헬퍼 메소드
     private Integer getProductPrice(Long productId) {
         return checkPriceRepository.findById(productId)
             .map(CheckPrice::getPrice)
             .orElse(0);
+    }
+
+    /**
+     * 내 정보 조회 비즈니스 프로세스
+     * 비즈니스 규칙: authorshipStatus가 "accepted"면 isAuthor = true, 아니면 false
+     * @Transactional 없음: 순수 조회 작업으로 성능 최적화
+     */
+    public Map<String, Object> getUserInfo(Long userId) {
+        Map<String, Object> result = new HashMap<>();
+        
+        // 사용자 정보 조회
+        Optional<UserAccessProfile> userOpt = userAccessProfileRepository.findById(userId);
+        if (!userOpt.isPresent()) {
+            throw new RuntimeException("사용자를 찾을 수 없습니다: " + userId);
+        }
+        
+        UserAccessProfile user = userOpt.get();
+        
+        // isAuthor 판단: authorshipStatus가 "accepted"면 true, 아니면 false
+        boolean isAuthor = "accepted".equals(user.getAuthorshipStatus());
+        
+        // 응답 데이터 구성
+        result.put("id", user.getId());
+        result.put("accountId", user.getAccountId());
+        result.put("nickname", user.getNickname());
+        result.put("isAuthor", isAuthor);
+        result.put("points", user.getPoints() != null ? user.getPoints() : 0);
+        
+        return result;
     }
 } 

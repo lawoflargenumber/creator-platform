@@ -96,5 +96,21 @@ public class UserAccessProfileController {
             return ResponseEntity.status(500).body(error);
         }
     }
+
+    // 내 정보 조회
+    @GetMapping("/me")
+    public ResponseEntity<Map<String, Object>> getUserInfo(
+        @RequestParam Long id
+    ) {
+        try {
+            Map<String, Object> result = userAccessProfileService.getUserInfo(id);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", true);
+            error.put("message", e.getMessage());
+            return ResponseEntity.status(404).body(error);
+        }
+    }
 }
 //>>> Clean Arch / Inbound Adaptor
