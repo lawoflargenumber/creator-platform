@@ -24,7 +24,8 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
         "/auth",
         "/users/register",
         "/users/registeruser",
-        "/actuator"
+        "/actuator",
+        "/admin" // 어드민 요청은 무시
     );
     
     @Override

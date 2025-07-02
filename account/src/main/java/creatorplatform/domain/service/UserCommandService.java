@@ -3,6 +3,11 @@ package creatorplatform.domain.service;
 import creatorplatform.domain.Users;
 import creatorplatform.domain.UserRegistered;
 import creatorplatform.domain.RegisterUserCommand;
+import creatorplatform.domain.RefreshToken;
+import creatorplatform.domain.repository.RefreshTokenRepository;
+import creatorplatform.domain.security.JwtUtils;
+import creatorplatform.domain.controller.JwtResponse;
+import creatorplatform.infra.LoginRequest;
 import creatorplatform.domain.aggregate.RegisteredUser;
 import creatorplatform.domain.command.*;
 import creatorplatform.domain.event.*;
@@ -10,13 +15,18 @@ import creatorplatform.domain.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import java.time.Instant;
 import java.util.Date;
+import java.util.UUID;
+import java.util.Optional;
 
 @Service
 public class UserCommandService {
 
     @Autowired private UsersRepository usersRepository;
     @Autowired private ApplicationEventPublisher publisher;
+    @Autowired private JwtUtils jwtUtils;
+    @Autowired private RefreshTokenRepository refreshTokenRepository;
 
     public void handleRegisterUser(RegisterUserCommand cmd) {
         Users user = new Users();
@@ -67,5 +77,30 @@ public class UserCommandService {
         user.setNickname(cmd.nickname);
         user.setAgreedToMarketing(cmd.agreedToMarketing);
         usersRepository.save(user);
+    }
+
+    public JwtResponse handleLogin(LoginRequest request) {
+        Optional<Users> userOpt = usersRepository.findByAccountId(request.getAccountId());
+        if (userOpt.isEmpty() || !userOpt.get().getPassword().equals(request.getPassword())) {
+            throw new RuntimeException("Invalid credentials");
+        }
+        
+        Users user = userOpt.get();
+        
+        String accessToken = jwtUtils.generateJwtToken(user.getAccountId());
+        String refreshTokenStr = UUID.randomUUID().toString();
+        
+        RefreshToken rt = RefreshToken.builder()
+                .user(user)
+                .token(refreshTokenStr)
+                .issuedAt(Instant.now())
+                .expiresAt(Instant.now().plusMillis(jwtUtils.getRefreshExpirationMs()))
+                .revoked(false)
+                .build();
+        
+        refreshTokenRepository.deleteByUserId(user.getId());
+        refreshTokenRepository.save(rt);
+        
+        return new JwtResponse(accessToken, refreshTokenStr);
     }
 }
