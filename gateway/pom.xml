@@ -28,6 +28,16 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-gateway</artifactId>
 		</dependency>
+		
+		<!-- JWT 의존성 추가 -->
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.9.1</version>
+		</dependency>
+		
+		<!-- WebFlux는 이미 spring-cloud-starter-gateway에 포함되어 있음 -->
+		
 	</dependencies>
 
 	<dependencyManagement>

@@ -13,4 +13,5 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 public interface DraftsRepository
     extends PagingAndSortingRepository<Drafts, Long> {
     List<Drafts> findByAuthorId(Long authorId);
+    List<Drafts> findByAuthorIdAndStatus(Long authorId, Drafts.Status status);
 }

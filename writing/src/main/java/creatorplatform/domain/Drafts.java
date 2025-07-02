@@ -24,6 +24,8 @@ public class Drafts {
     private Long authorId;
     private String authorNickname;
     private String title;
+
+    @Lob
     private String content;
 
     @Enumerated(EnumType.STRING)

@@ -21,23 +21,6 @@ public class UsersController {
     UsersRepository usersRepository;
 
     @RequestMapping(
-        value = "/users/register",
-        method = RequestMethod.POST,
-        produces = "application/json;charset=UTF-8"
-    )
-    public Users registerUser(
-        HttpServletRequest request,
-        HttpServletResponse response,
-        @RequestBody RegisterUserCommand registerUserCommand
-    ) throws Exception {
-        System.out.println("##### /users/registerUser  called #####");
-        Users users = new Users();
-        users.registerUser(registerUserCommand);
-        usersRepository.save(users);
-        return users;
-    }
-
-    @RequestMapping(
         value = "/users/{id}/applyforauthorship",
         method = RequestMethod.PUT,
         produces = "application/json;charset=UTF-8"

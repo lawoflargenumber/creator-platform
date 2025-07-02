@@ -38,22 +38,26 @@ public class PolicyHandler {
     ) {
         log.info("##### listener GenerateInitialContent : {}", requestedPublication);
 
-        if (repository.findById(requestedPublication.getId()).isPresent()) {
-            log.warn("Process for bookId {} already exists. Skipping.", requestedPublication.getId());
+        if (repository.findById(requestedPublication.getDraftId()).isPresent()) {
+            log.warn("Process for bookId {} already exists. Skipping.", requestedPublication.getDraftId());
             return;
         }
 
         try {
+            AiGeneratedContent process = new AiGeneratedContent();
+            process.setId(requestedPublication.getDraftId());
+            process.setAuthorId(requestedPublication.getAuthorId());
+            process.setAuthorNickname(requestedPublication.getAuthorNickname());
+            process.setTitle(requestedPublication.getTitle());
+            process.setContent(requestedPublication.getContent());
+            process.setStatus(ProcessingStatus.PENDING);
+            repository.save(process);
+
             AiGeneratorPort.AiGeneratedResult aiResult = aiGenerator.generate(
                     requestedPublication.getTitle(),
                     requestedPublication.getContent()
             );
 
-            AiGeneratedContent process = new AiGeneratedContent();
-            process.setId(requestedPublication.getId());
-            process.setTitle(requestedPublication.getTitle());
-            process.setContent(requestedPublication.getContent());
-            process.setStatus(ProcessingStatus.PENDING);
             process.applyGeneratedContent(
                     aiResult.getSummary(),
                     aiResult.getPrice(),
@@ -64,7 +68,7 @@ public class PolicyHandler {
             repository.save(process);
             log.info("AiProcessing data saved for bookId: {}", process.getId());
         } catch (Exception e) {
-            log.error("Failed to process publication request for bookId: {}", requestedPublication.getId(), e);
+            log.error("Failed to process publication request for bookId: {}", requestedPublication.getDraftId(), e);
         }
     }
 }

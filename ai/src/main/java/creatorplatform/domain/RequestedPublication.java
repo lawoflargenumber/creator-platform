@@ -9,7 +9,7 @@ import lombok.*;
 @ToString
 public class RequestedPublication extends AbstractEvent {
 
-    private Long id;
+    private Long draftId;       // 이벤트 소비자가 바로 쓰도록 필드명 변경
     private Long authorId;
     private String authorNickname;
     private String title;
