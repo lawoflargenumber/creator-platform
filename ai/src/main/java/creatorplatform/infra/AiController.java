@@ -2,10 +2,12 @@ package creatorplatform.infra;
 
 import creatorplatform.domain.AiGeneratedContent;
 import creatorplatform.domain.AiGeneratedContentRepository;
+import creatorplatform.domain.AiService;
 import creatorplatform.domain.ProcessingStatus;
 import creatorplatform.domain.port.AiGeneratorPort;
 import creatorplatform.infra.dto.AiContentResponse;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,13 +18,11 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/ai")
+@RequiredArgsConstructor
 public class AiController {
 
-    @Autowired
-    private AiGeneratedContentRepository repository;
-
-    @Autowired
-    private AiGeneratorPort aiGenerator;
+    private final AiGeneratedContentRepository repository;
+    private final AiService aiService;
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getAiContents(@PathVariable Long id) {
@@ -47,30 +47,12 @@ public class AiController {
             @PathVariable Long id,
             @RequestBody RegenerationRequest request
     ) {
-        Optional<AiGeneratedContent> entity = repository.findById(id);
-
-        if (entity.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        AiGeneratedContent contentEntity = entity.get();
-        contentEntity.setStatus(ProcessingStatus.PENDING);
-
-        AiGeneratorPort.AiGeneratedResult aiResult = aiGenerator.regenerate(
-                contentEntity.getTitle(),
-                contentEntity.getContent(),
-                request.getUserPrompt()
-            );
-        contentEntity.applyGeneratedContent(
-                    aiResult.getSummary(),
-                    aiResult.getPrice(),
-                    aiResult.getImageUrl(),
-                    aiResult.getCategory()
-            );
-
-        AiGeneratedContent updatedContent = repository.save(contentEntity);
-
-        return ResponseEntity.ok(AiContentResponse.fromEntity(updatedContent));
+        return repository.findById(id)
+                .map(entity -> {
+                    aiService.regenerateContent(id, request.getUserPrompt());
+                    return ResponseEntity.ok(AiContentResponse.fromEntity(entity));
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/{id}/complete")

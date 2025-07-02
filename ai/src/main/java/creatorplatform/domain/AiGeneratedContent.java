@@ -4,7 +4,9 @@ import javax.persistence.*;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Entity
 @Table(name = "AiGeneratedContent_table")
@@ -40,16 +42,17 @@ public class AiGeneratedContent {
     @Enumerated(EnumType.STRING)
     private ProcessingStatus status;
 
-    public static AiGeneratedContent createFrom(Long bookId, Long authorId, String authorNickname, String title, String content) {
-        AiGeneratedContent generatedContent = new AiGeneratedContent();
-        generatedContent.id = bookId;
-        generatedContent.authorId = authorId;
-        generatedContent.authorNickname = authorNickname;
-        generatedContent.title = title;
-        generatedContent.content = content;
-        generatedContent.status = ProcessingStatus.PENDING;
+    public static AiGeneratedContent fromEvent(RequestedPublication event) {
+        AiGeneratedContent content = new AiGeneratedContent();
 
-        return generatedContent;
+        content.setId(event.getDraftId());
+        content.setAuthorId(event.getAuthorId());
+        content.setAuthorNickname(event.getAuthorNickname());
+        content.setTitle(event.getTitle());
+        content.setContent(event.getContent());
+
+        content.setStatus(ProcessingStatus.PENDING);
+        return content;
     }
 
     public void applyGeneratedContent(String summary, Integer price, String coverImageUrl, Category category) {
