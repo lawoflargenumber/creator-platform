@@ -20,6 +20,14 @@ public class UserRegistered extends AbstractEvent {
     
     public UserRegistered(Users aggregate) {
         super(aggregate);
+        
+        // Users 데이터를 이벤트 필드에 설정
+        this.id = aggregate.getId();
+        this.nickname = aggregate.getNickname();
+        this.accountId = aggregate.getAccountId();
+        this.authorshipStatus = aggregate.getAuthorshipStatus();
+        this.authorsProfile = aggregate.getAuthorsProfile();
+        this.authorNickname = aggregate.getAuthorNickname();
     }
 
     public UserRegistered() {

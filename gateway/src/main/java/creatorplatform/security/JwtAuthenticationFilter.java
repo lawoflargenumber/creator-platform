@@ -21,11 +21,10 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
     
     // 인증이 필요없는 경로들
     private static final List<String> OPEN_API_ENDPOINTS = Arrays.asList(
-        "/auth",
-        "/users/register",
-        "/users/registeruser",
-        "/actuator",
-        "/admin" // 어드민 요청은 무시
+        "/auth/register",
+        "/auth/login",
+        "/auth/refresh",
+        "/actuator"
     );
     
     @Override

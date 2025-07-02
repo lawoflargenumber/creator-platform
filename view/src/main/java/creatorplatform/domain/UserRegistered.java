@@ -11,8 +11,10 @@ public class UserRegistered extends AbstractEvent {
 
     private Long id;
     private String nickname;
+    private String accountId;
     private String authorshipStatus;
     private Date createdAt;
     private Boolean subscriber;
     private String authorsProfile;
+    private String authorNickname;
 }

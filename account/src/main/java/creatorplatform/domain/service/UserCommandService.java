@@ -15,6 +15,7 @@ import creatorplatform.domain.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
@@ -28,6 +29,7 @@ public class UserCommandService {
     @Autowired private JwtUtils jwtUtils;
     @Autowired private RefreshTokenRepository refreshTokenRepository;
 
+    @Transactional
     public void handleRegisterUser(RegisterUserCommand cmd) {
         Users user = new Users();
         user.setAccountId(cmd.getAccountId());
@@ -43,6 +45,7 @@ public class UserCommandService {
         userRegistered.publishAfterCommit(); // 트랜잭션 커밋 후 발행
     }
 
+    @Transactional
     public void handleApplyForAuthorship(ApplyForAuthorshipCommand cmd) {
         Users user = usersRepository.findById(Long.parseLong(cmd.id)).orElseThrow();
         user.setAuthorshipStatus("PENDING");
@@ -52,6 +55,7 @@ public class UserCommandService {
         publisher.publishEvent(new AuthorshipAppliedEvent(cmd.id, user.getAuthorshipStatus(), user.getAuthorsProfile()));
     }
 
+    @Transactional
     public void handleStartSubscribe(StartSubscribeCommand cmd) {
         Users user = usersRepository.findById(Long.parseLong(cmd.id)).orElseThrow();
         user.setSubscriber(true);
@@ -59,6 +63,7 @@ public class UserCommandService {
         publisher.publishEvent(new SubscriptionStartedEvent(cmd.id));
     }
 
+    @Transactional
     public void handleAcceptApplication(AcceptApplicationCommand cmd) {
         Users user = usersRepository.findById(Long.parseLong(cmd.id)).orElseThrow();
         user.setAuthorshipStatus("ACCEPTED");
@@ -66,12 +71,14 @@ public class UserCommandService {
         publisher.publishEvent(new AuthorshipAcceptedEvent(cmd.id, user.getAuthorNickname()));
     }
 
+    @Transactional
     public void handleDeclineApplication(DeclineApplicationCommand cmd) {
         Users user = usersRepository.findById(Long.parseLong(cmd.id)).orElseThrow();
         user.setAuthorshipStatus("DECLINED");
         usersRepository.save(user);
     }
 
+    @Transactional
     public void handleUpdateUser(UpdateUserCommand cmd) {
         Users user = usersRepository.findById(Long.parseLong(cmd.id)).orElseThrow();
         user.setNickname(cmd.nickname);
@@ -79,6 +86,7 @@ public class UserCommandService {
         usersRepository.save(user);
     }
 
+    @Transactional
     public JwtResponse handleLogin(LoginRequest request) {
         Optional<Users> userOpt = usersRepository.findByAccountId(request.getAccountId());
         if (userOpt.isEmpty() || !userOpt.get().getPassword().equals(request.getPassword())) {
