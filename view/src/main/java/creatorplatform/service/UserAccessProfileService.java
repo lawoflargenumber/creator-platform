@@ -233,4 +233,33 @@ public class UserAccessProfileService {
             .map(CheckPrice::getPrice)
             .orElse(0);
     }
+
+    /**
+     * 내 정보 조회 비즈니스 프로세스
+     * 비즈니스 규칙: authorshipStatus가 "accepted"면 isAuthor = true, 아니면 false
+     * @Transactional 없음: 순수 조회 작업으로 성능 최적화
+     */
+    public Map<String, Object> getUserInfo(Long userId) {
+        Map<String, Object> result = new HashMap<>();
+        
+        // 사용자 정보 조회
+        Optional<UserAccessProfile> userOpt = userAccessProfileRepository.findById(userId);
+        if (!userOpt.isPresent()) {
+            throw new RuntimeException("사용자를 찾을 수 없습니다: " + userId);
+        }
+        
+        UserAccessProfile user = userOpt.get();
+        
+        // isAuthor 판단: authorshipStatus가 "accepted"면 true, 아니면 false
+        boolean isAuthor = "accepted".equals(user.getAuthorshipStatus());
+        
+        // 응답 데이터 구성
+        result.put("id", user.getId());
+        result.put("accountId", user.getAccountId());
+        result.put("nickname", user.getNickname());
+        result.put("isAuthor", isAuthor);
+        result.put("points", user.getPoints() != null ? user.getPoints() : 0);
+        
+        return result;
+    }
 } 
