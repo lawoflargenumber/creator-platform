@@ -1,6 +1,7 @@
 package creatorplatform.domain.service;
 
 import creatorplatform.domain.Users;
+import creatorplatform.domain.UserRegistered;
 import creatorplatform.domain.aggregate.RegisteredUser;
 import creatorplatform.domain.command.*;
 import creatorplatform.domain.event.*;
@@ -8,6 +9,7 @@ import creatorplatform.domain.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import java.util.Date;
 
 @Service
 public class UserCommandService {
@@ -23,8 +25,11 @@ public class UserCommandService {
         user.setAuthorshipStatus("DEFAULT");
         user.setSubscriber(false);
         user.setAgreedToMarketing(cmd.agreedToMarketing);
+        user.setCreatedAt(new Date()); // 생성 시간 설정
         usersRepository.save(user);
-        publisher.publishEvent(new UserRegisteredEvent(cmd.id, cmd.nickname));
+        
+        UserRegistered userRegistered = new UserRegistered(user);
+        userRegistered.publishAfterCommit(); // 트랜잭션 커밋 후 발행
     }
 
     public void handleApplyForAuthorship(ApplyForAuthorshipCommand cmd) {
