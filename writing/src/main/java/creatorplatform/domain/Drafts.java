@@ -39,7 +39,6 @@ public class Drafts {
 
     public void saveDraft(SaveDraftCommand cmd) {
         this.authorId = cmd.getAuthorId();
-        this.authorNickname = cmd.getAuthorNickname();
         this.title = cmd.getTitle();
         this.content = cmd.getContent();
         this.createdAt = new Date();

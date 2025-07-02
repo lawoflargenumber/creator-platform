@@ -1,10 +1,10 @@
-package creatorplatform.service;
+package creatorplatform.external;
 
 import creatorplatform.domain.*;
 import creatorplatform.external.AuthorService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import creatorplatform.infra.CheckAuthorsRepository;
 @Service
 @Transactional
 public class DraftsService {
@@ -28,6 +28,18 @@ public class DraftsService {
         Drafts draft = new Drafts();
         draft.setAuthorNickname(nickname); // Drafts 객체에 직접 설정
         draft.saveDraft(cmd);
-        return repo.save(draft);
+
+    // 드래프트를 먼저 저장하여 ID 생성
+        Drafts savedDraft = repo.save(draft);
+
+    // 이벤트 발행
+        DraftSaved event = new DraftSaved();
+        event.setId(savedDraft.getId());
+        event.setAuthorId(savedDraft.getAuthorId());
+        event.setTitle(savedDraft.getTitle());
+        event.setContent(savedDraft.getContent());
+        event.publish(); // 이벤트 발행
+
+        return savedDraft;
 }
 }

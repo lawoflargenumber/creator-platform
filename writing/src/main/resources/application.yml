@@ -33,7 +33,7 @@ spring:
           content-type: application/json
 
 authors:
-  url: http://localhost:8081
+  url: http://author-service:8081
 
 logging:
   level:
@@ -74,7 +74,8 @@ spring:
         event-out:
           destination: creatorplatform
           contentType: application/json
-
+authors:
+  url: http://author-service:808
 api:
   url: 
     writing: writing:8081
