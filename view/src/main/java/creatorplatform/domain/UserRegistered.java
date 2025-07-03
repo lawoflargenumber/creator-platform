@@ -15,5 +15,5 @@ public class UserRegistered extends AbstractEvent {
     private String authorshipStatus;
     private String authorsProfile;
     private String authorNickname;
-    private Boolean agreedToMarketing;
+    private Integer points;
 }

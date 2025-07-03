@@ -171,20 +171,20 @@ public class UserAccessProfileService {
      */
     public void processUserRegistration(UserRegistered userRegistered) {
         System.out.println("🎉 UserRegistered 이벤트 수신! userId: " + userRegistered.getId() + ", nickname: " + userRegistered.getNickname() + ", accountId: " + userRegistered.getAccountId());
-        
+        System.out.println("💰 받은 포인트: " + userRegistered.getPoints());
         
         UserAccessProfile userAccessProfile = new UserAccessProfile();
-        userAccessProfile.setId(userRegistered.getId()); // Account 서비스의 ID 그대로 사용
-        userAccessProfile.setAccountId(userRegistered.getAccountId()); // accountId 설정
-        userAccessProfile.setNickname(userRegistered.getNickname()); // nickname 설정
-        // 비즈니스 규칙: agreedToMarketing 이 true 일 때 5000 포인트 지급, false 일 때 1000 포인트 지급
-        Integer points = userRegistered.getAgreedToMarketing() ? 5000 : 1000;
-        userAccessProfile.setPoints(points); 
-        userAccessProfile.setIsSubscribed(false); // 기본값: 미구독
+        userAccessProfile.setId(userRegistered.getId());
+        userAccessProfile.setAccountId(userRegistered.getAccountId());
+        userAccessProfile.setNickname(userRegistered.getNickname());
+        
+        // 🎯 계산 없이 받은 포인트 그대로 사용
+        userAccessProfile.setPoints(userRegistered.getPoints());
+        userAccessProfile.setIsSubscribed(false);
         userAccessProfile.setSubscribtionDue(null);
         
         userAccessProfileRepository.save(userAccessProfile);
-        System.out.println("✅ 신규 사용자 생성 완료! userId: " + userRegistered.getId() + ", accountId: " + userRegistered.getAccountId() + ", nickname: " + userRegistered.getNickname() + ", 포인트: 100");
+        System.out.println("✅ 신규 사용자 생성 완료! userId: " + userRegistered.getId() + ", accountId: " + userRegistered.getAccountId() + ", nickname: " + userRegistered.getNickname() + ", 포인트: " + userRegistered.getPoints());
     }
     
     /**
@@ -292,6 +292,8 @@ public class UserAccessProfileService {
         result.put("nickname", user.getNickname());
         result.put("isAuthor", isAuthor);
         result.put("points", user.getPoints() != null ? user.getPoints() : 0);
+        result.put("authorNickname", user.getAuthorNickname());
+        result.put("authorsProfile", user.getAuthorsProfile());
         
         return result;
     }
