@@ -16,13 +16,13 @@ spec:
     spec:
       containers:
         - name: view
-          image: "username/view:latest"
+          image: "aivleai08project.azurecr.io/view:latest"
           ports:
-            - containerPort: 8080
+            - containerPort: 8085
           readinessProbe:
             httpGet:
               path: '/actuator/health'
-              port: 8080
+              port: 8085
             initialDelaySeconds: 10
             timeoutSeconds: 2
             periodSeconds: 5
@@ -30,7 +30,7 @@ spec:
           livenessProbe:
             httpGet:
               path: '/actuator/health'
-              port: 8080
+              port: 8085
             initialDelaySeconds: 120
             timeoutSeconds: 2
             periodSeconds: 5

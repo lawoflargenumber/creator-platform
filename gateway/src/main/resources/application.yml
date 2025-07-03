@@ -24,7 +24,7 @@ spring:
         - id: view
           uri: http://localhost:8085
           predicates:
-            - Path=/userAccessProfiles/**, /checkPrices/**, /checkIfBoughts/**, /viewHistories/**
+            - Path=/view/**, /userAccessProfiles/**, /checkPrices/**, /checkIfBoughts/**, /viewHistories/**, /UserAccessProfile/**
         - id: ai
           uri: http://localhost:8086
           predicates:
@@ -86,7 +86,7 @@ spring:
         - id: view
           uri: http://view:8085
           predicates:
-            - Path=/view/**
+            - Path=/view/**, /userAccessProfiles/**, /checkPrices/**, /checkIfBoughts/**, /viewHistories/**
         - id: viewhistories
           uri: http://view:8085
           predicates:
