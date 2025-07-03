@@ -25,4 +25,20 @@ spec:
               value: docker
             - name: TZ
               value: Asia/Seoul
+          readinessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8084
+            initialDelaySeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8084
+            initialDelaySeconds: 120
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 5
 
