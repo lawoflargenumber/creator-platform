@@ -20,8 +20,7 @@ public class AuthorshipAccepted extends AbstractEvent {
     public AuthorshipAccepted(Users aggregate) {
         super(aggregate);
         this.id = aggregate.getId();
-        this.nickname = aggregate.getNickname();
-
+        this.nickname = aggregate.getAuthorNickname();
         this.authorshipStatus = aggregate.getAuthorshipStatus();
         this.createdAt = aggregate.getCreatedAt();
         this.subscriber = aggregate.getSubscriber();
