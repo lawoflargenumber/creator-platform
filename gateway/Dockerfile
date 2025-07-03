@@ -1,6 +1,6 @@
-FROM adoptopenjdk/maven-openjdk11:latest
-WORKDIR /usr/src
-COPY . .
+FROM openjdk:8u212-jdk-alpine
+RUN apk add --no-cache curl
+COPY target/*SNAPSHOT.jar app.jar
 EXPOSE 8080
 ENV SPRING_PROFILES_ACTIVE=docker
 ENV TZ=Asia/Seoul
