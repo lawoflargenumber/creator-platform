@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
         - name: gateway
-          image: username/gateway:latest
+          image: aivleai08project.azurecr.io/gateway:v3.1
           ports:
             - containerPort: 8080
