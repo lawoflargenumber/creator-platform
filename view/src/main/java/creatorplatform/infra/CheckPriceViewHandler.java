@@ -18,19 +18,23 @@ public class CheckPriceViewHandler {
     private CheckPriceRepository checkPriceRepository;
 
     @StreamListener(KafkaProcessor.INPUT)
-    public void whenCompletedPublication_then_CREATE_1(
-        @Payload CompletedPublication completedPublication
+    public void whenGenerationCompleted_then_CREATE_1(
+        @Payload GenerationCompleted generationCompleted
     ) {
         try {
-            if (!completedPublication.validate()) return;
+            if (!generationCompleted.validate()) return;
 
             // view 객체 생성
             CheckPrice checkPrice = new CheckPrice();
             // view 객체에 이벤트의 Value 를 set 함
-            checkPrice.setProductId(completedPublication.getId());
-            checkPrice.setPrice(completedPublication.getPrice());
+            checkPrice.setProductId(generationCompleted.getId());
+            checkPrice.setPrice(generationCompleted.getPrice());
             // view 레파지 토리에 save
             checkPriceRepository.save(checkPrice);
+            
+            System.out.println("✅ CheckPrice created from GenerationCompleted: " + 
+                "productId=" + generationCompleted.getId() + 
+                ", price=" + generationCompleted.getPrice());
         } catch (Exception e) {
             e.printStackTrace();
         }

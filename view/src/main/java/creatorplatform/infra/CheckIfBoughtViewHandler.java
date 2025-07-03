@@ -17,10 +17,15 @@ public class CheckIfBoughtViewHandler {
     @Autowired
     private CheckIfBoughtRepository checkIfBoughtRepository;
 
-    @StreamListener(KafkaProcessor.INPUT)
-    public void whenAccessGranted_then_CREATE_1(
+    // ⚠️ 중복 저장 방지를 위해 비활성화
+    // CheckIfBought는 UserAccessProfileService에서 직접 저장되므로 이벤트 핸들러 불필요
+    // @StreamListener(KafkaProcessor.INPUT)
+    public void whenAccessGranted_then_CREATE_1_DISABLED(
         @Payload AccessGranted accessGranted
     ) {
+        // 중복 저장 방지를 위해 비활성화됨
+        System.out.println("⚠️ [CheckIfBoughtViewHandler] 중복 저장 방지를 위해 비활성화됨");
+        /*
         try {
             if (!accessGranted.validate()) return;
 
@@ -35,6 +40,7 @@ public class CheckIfBoughtViewHandler {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        */
     }
     //>>> DDD / CQRS
 }

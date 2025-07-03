@@ -45,7 +45,13 @@ public class UserCommandService {
         user.setCreatedAt(new Date()); // 생성 시간 설정
         usersRepository.save(user);
         
+        // 🎯 비즈니스 로직: 포인트 계산 (마케팅 동의 시 5000, 아니면 1000)
+        Integer calculatedPoints = (cmd.getAgreedToMarketing() != null && cmd.getAgreedToMarketing()) ? 5000 : 1000;
+        System.out.println("💰 [Service] 비즈니스 로직 - 포인트 계산: agreedToMarketing=" + cmd.getAgreedToMarketing() + ", points=" + calculatedPoints);
+        
         UserRegistered userRegistered = new UserRegistered(user);
+        userRegistered.setPoints(calculatedPoints); // 계산된 포인트 설정
+        System.out.println("📤 [Service] UserRegistered 이벤트 발행 준비: points=" + calculatedPoints);
         userRegistered.publishAfterCommit(); // 트랜잭션 커밋 후 발행
     }
 
@@ -56,7 +62,9 @@ public class UserCommandService {
         user.setAuthorshipStatus("PENDING");
         user.setAuthorsProfile(cmd.authorsProfile);
         user.setAuthorNickname(cmd.authorNickname);
-        publisher.publishEvent(new AuthorshipApplied(user));
+        
+        AuthorshipApplied event = new AuthorshipApplied(user);
+        event.publishAfterCommit();
 
         usersRepository.save(user);
     }
@@ -69,7 +77,7 @@ public class UserCommandService {
 
         SubscriptionStarted event = new SubscriptionStarted(user);
         LocalDateTime startDate = event.getSubscribtionStartedAt();
-        publisher.publishEvent(event);
+        event.publishAfterCommit();
 
         return startDate.plusMonths(1);
     }
@@ -79,7 +87,9 @@ public class UserCommandService {
         Users user = usersRepository.findById(id).orElseThrow();
         user.setAuthorshipStatus("ACCEPTED");
         usersRepository.save(user);
-        publisher.publishEvent(new AuthorshipAccepted(user));
+        
+        AuthorshipAccepted event = new AuthorshipAccepted(user);
+        event.publishAfterCommit();
     }
 
 //    public void handleDeclineApplication(DeclineApplicationCommand cmd) {
