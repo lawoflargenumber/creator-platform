@@ -27,8 +27,8 @@ public class ViewHistoryViewHandler {
             // view 객체 생성
             ViewHistory viewHistory = new ViewHistory();
             // view 객체에 이벤트의 Value 를 set 함
-            viewHistory.setUserId(viewTracked.getId());
-            viewHistory.setProductId(viewTracked.getProductId());
+            viewHistory.setUserId(viewTracked.getUserId());
+            viewHistory.setProductId(viewTracked.getId());
             viewHistory.setViewedAt(viewTracked.getCreatedAt());
             // view 레파지 토리에 save
             viewHistoryRepository.save(viewHistory);

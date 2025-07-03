@@ -15,7 +15,7 @@ public class ViewHistory {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
-
+    private Long userId;
     private Long productId;
     private Date viewedAt;
 }
