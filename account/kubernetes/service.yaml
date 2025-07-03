@@ -6,7 +6,7 @@ metadata:
     app: account
 spec:
   ports:
-    - port: 8080
-      targetPort: 8080
+    - port: 8082
+      targetPort: 8082
   selector:
     app: account
