@@ -11,3 +11,4 @@ spec:
   selector:
     app: gateway
   type: LoadBalancer
+  loadBalancerIP: 20.249.112.242
