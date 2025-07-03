@@ -12,7 +12,8 @@ public class DraftSaved extends AbstractEvent {
     private Long id;
     private Long authorId;
     private String title;
-
+    private String content;
+    
     public DraftSaved(Drafts aggregate) {
         super(aggregate);
         this.id       = aggregate.getId();

@@ -72,7 +72,7 @@ public class PolicyHandler {
      */
     @StreamListener(
         value = KafkaProcessor.INPUT,
-        condition = "headers['type']=='AuthorshipAppliedEvent'"
+        condition = "headers['type']=='AuthorshipApplied'"
     )
     public void wheneverAuthorshipApplied_UpdateAuthorProfile(
         @Payload AuthorshipApplied authorshipApplied
@@ -81,6 +81,23 @@ public class PolicyHandler {
 
         // Application Service로 비즈니스 프로세스 위임
         userAccessProfileService.processAuthorshipApplication(event);
+    }
+
+    /**
+     * 작가 승인 이벤트 라우팅
+     * Account 서비스 → View 서비스 이벤트 전달
+     */
+    @StreamListener(
+        value = KafkaProcessor.INPUT,
+        condition = "headers['type']=='AuthorshipAccepted'"
+    )
+    public void wheneverAuthorshipAccepted_UpdateAuthorStatus(
+        @Payload AuthorshipAccepted authorshipAccepted
+    ) {
+        AuthorshipAccepted event = authorshipAccepted;
+
+        // Application Service로 비즈니스 프로세스 위임
+        userAccessProfileService.processAuthorshipAcceptance(event);
     }
 }
 //>>> Clean Arch / Inbound Adaptor

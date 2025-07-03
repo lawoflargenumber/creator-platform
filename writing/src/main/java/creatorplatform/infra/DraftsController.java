@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import creatorplatform.external.DraftsService;
 @RestController
 @RequiredArgsConstructor
 @Transactional
@@ -18,18 +19,11 @@ public class DraftsController {
     private final CheckAuthorsRepository checkAuthorsRepository;
 
     // ---------- 드래프트 저장 ----------
+    private final DraftsService draftsService;
+
     @PostMapping("/savedraft")
     public EntityModel<Drafts> saveDraft(@RequestBody SaveDraftCommand cmd) {
-
-        String nickname = checkAuthorsRepository.findById(cmd.getAuthorId())
-                .map(CheckAuthors::getNickname)
-                .orElse(null);
-        cmd.setAuthorNickname(nickname);
-
-        Drafts draft = new Drafts();
-        draft.saveDraft(cmd);
-        Drafts saved = repo.save(draft);
-
+        Drafts saved = draftsService.saveDraft(cmd);
         return EntityModel.of(saved,
             linkTo(methodOn(DraftsController.class).getDraft(saved.getId())).withSelfRel(),
             linkTo(methodOn(DraftsController.class).listDrafts(saved.getAuthorId())).withRel("drafts")
@@ -53,11 +47,11 @@ public class DraftsController {
         String nickname = checkAuthorsRepository.findById(cmd.getAuthorId())
                 .map(CheckAuthors::getNickname)
                 .orElse(null);
-        cmd.setAuthorNickname(nickname);
+        
 
         Drafts draft = new Drafts();
         draft.saveDraft(cmd);
-
+        draft.setAuthorNickname(nickname); // Drafts 객체에 직접 설정
         // 1️⃣ DB에 먼저 저장 (id 생성)
         Drafts saved = repo.save(draft);
 

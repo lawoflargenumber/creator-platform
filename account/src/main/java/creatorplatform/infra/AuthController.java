@@ -7,9 +7,10 @@ import creatorplatform.domain.repository.RefreshTokenRepository;
 import creatorplatform.domain.RegisterUserCommand;
 import creatorplatform.domain.security.JwtUtils;
 import creatorplatform.domain.service.UserCommandService;
-import creatorplatform.domain.controller.LoginRequest;
+import creatorplatform.infra.LoginRequest;
 import creatorplatform.domain.controller.JwtResponse;
 import creatorplatform.domain.controller.TokenRefreshRequest;
+import creatorplatform.infra.LoginResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,6 @@ import java.util.Optional;
 public class AuthController {
     private final UsersRepository usersRepository;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final JwtUtils jwtUtils;
     private final UserCommandService userCommandService;
 
     @PostMapping("/register")
@@ -34,48 +34,33 @@ public class AuthController {
                 .body(null);
         }
         userCommandService.handleRegisterUser(req);
-        Users savedUser = usersRepository.findByAccountId(req.getAccountId())
+        // 사용자 생성 확인
+        usersRepository.findByAccountId(req.getAccountId())
             .orElseThrow(() -> new RuntimeException("User creation failed"));
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        Optional<Users> userOpt = usersRepository.findByAccountId(request.getEmail());
-        if (userOpt.isEmpty() || !userOpt.get().getPassword().equals(request.getPassword())) {
-            return ResponseEntity.badRequest().body("Invalid credentials");
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+        try {
+            LoginResponse response = userCommandService.handleLogin(request);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(null);
         }
-        Users user = userOpt.get();
-        String accessToken = jwtUtils.generateJwtToken(user.getAccountId());
-        String refreshTokenStr = UUID.randomUUID().toString();
-        RefreshToken rt = RefreshToken.builder()
-                .user(user)
-                .token(refreshTokenStr)
-                .issuedAt(Instant.now())
-                .expiresAt(Instant.now().plusMillis(jwtUtils.getRefreshExpirationMs()))
-                .revoked(false)
-                .build();
-        refreshTokenRepository.deleteByUserId(user.getId());
-        refreshTokenRepository.save(rt);
-        return ResponseEntity.ok(new JwtResponse(accessToken, refreshTokenStr));
     }
-
+    
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(@RequestBody TokenRefreshRequest request) {
-        Optional<RefreshToken> rtOpt = refreshTokenRepository.findByToken(request.getRefreshToken());
-        if (rtOpt.isEmpty() || rtOpt.get().isRevoked() || rtOpt.get().getExpiresAt().isBefore(Instant.now())) {
+        try {
+            JwtResponse response = userCommandService.handleRefreshToken(request.getRefreshToken());
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body("Invalid refresh token");
         }
-        RefreshToken rt = rtOpt.get();
-        String newAccessToken = jwtUtils.generateJwtToken(rt.getUser().getAccountId());
-        String newRefreshTokenStr = UUID.randomUUID().toString();
-        rt.setToken(newRefreshTokenStr);
-        rt.setIssuedAt(Instant.now());
-        rt.setExpiresAt(Instant.now().plusMillis(jwtUtils.getRefreshExpirationMs()));
-        refreshTokenRepository.save(rt);
-        return ResponseEntity.ok(new JwtResponse(newAccessToken, newRefreshTokenStr));
     }
 
+    // jwt 사용하지 않는 로그아웃을 어떻게 구현해야할지 논의가 필요함.
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@RequestBody TokenRefreshRequest request) {
         Optional<RefreshToken> rtOpt = refreshTokenRepository.findByToken(request.getRefreshToken());
