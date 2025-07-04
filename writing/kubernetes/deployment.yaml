@@ -16,13 +16,22 @@ spec:
     spec:
       containers:
         - name: writing
-          image: "username/writing:latest"
+          image: aivleai08project.azurecr.io/writing:v1
           ports:
-            - containerPort: 8080
+            - containerPort: 8081
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: docker
+            - name: SPRING_KAFKA_BINDER_BROKERS
+              value: my-kafka:9092
+            - name: SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS
+              value: my-kafka:9092
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: my-kafka:9092
           readinessProbe:
             httpGet:
               path: '/actuator/health'
-              port: 8080
+              port: 8081
             initialDelaySeconds: 10
             timeoutSeconds: 2
             periodSeconds: 5
@@ -30,7 +39,7 @@ spec:
           livenessProbe:
             httpGet:
               path: '/actuator/health'
-              port: 8080
+              port: 8081
             initialDelaySeconds: 120
             timeoutSeconds: 2
             periodSeconds: 5

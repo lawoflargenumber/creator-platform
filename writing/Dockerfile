@@ -1,7 +1,8 @@
-FROM openjdk:15-jdk-alpine
-COPY target/*SNAPSHOT.jar app.jar
-EXPOSE 8080
+FROM adoptopenjdk/maven-openjdk11:latest
+WORKDIR /usr/src
+COPY . .
+EXPOSE 8081
+ENV SPRING_PROFILES_ACTIVE=docker
 ENV TZ=Asia/Seoul
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-ENTRYPOINT ["java", "-Xmx400M", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/app.jar", "--spring.profiles.active=docker", "--spring.datasource.url=${SPRING_DATASOURCE_URL}", "--spring.datasource.username=${SPRING_DATASOURCE_USERNAME}", "--spring.datasource.password=${SPRING_DATASOURCE_PASSWORD}"]
-
+CMD ["mvn", "spring-boot:run"]
