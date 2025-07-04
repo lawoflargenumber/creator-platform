@@ -13,6 +13,7 @@ spec:
     metadata:
       labels:
         app: account
+        sidecar.istio.io/inject: "true"
     spec:
       containers:
         - name: account

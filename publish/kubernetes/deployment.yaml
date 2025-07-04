@@ -13,6 +13,7 @@ spec:
     metadata:
       labels:
         app: publish
+        sidecar.istio.io/inject: "true"
     spec:
       containers:
         - name: publish
