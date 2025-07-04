@@ -14,3 +14,4 @@ kubectl
 ngrok
 ngrok-*.tgz
 get_helm.sh
+istio-1.20.8/
