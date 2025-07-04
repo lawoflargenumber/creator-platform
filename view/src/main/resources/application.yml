@@ -67,7 +67,7 @@ spring:
     stream:
       kafka:
         binder:
-          brokers: my-kafka:29092
+          brokers: my-kafka:9092
         streams:
           binder:
             configuration:

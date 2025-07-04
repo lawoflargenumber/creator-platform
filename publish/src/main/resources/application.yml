@@ -62,7 +62,7 @@ spring:
     stream:
       kafka:
         binder:
-          brokers: my-kafka:29092
+          brokers: my-kafka:9092
         streams:
           binder:
             configuration:
@@ -79,5 +79,10 @@ spring:
         event-out:
           destination: creatorplatform
           contentType: application/json
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty.http.client: DEBUG
+    reactor.netty.http.server: DEBUG
 
 

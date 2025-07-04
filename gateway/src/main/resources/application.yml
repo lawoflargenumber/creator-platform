@@ -24,7 +24,7 @@ spring:
         - id: view
           uri: http://localhost:8085
           predicates:
-            - Path=/userAccessProfiles/**, /checkPrices/**, /checkIfBoughts/**, /viewHistories/**
+            - Path=/view/**, /userAccessProfiles/**, /checkPrices/**, /checkIfBoughts/**, /viewHistories/**, /UserAccessProfile/**
         - id: ai
           uri: http://localhost:8086
           predicates:
@@ -48,39 +48,62 @@ spring:
 
 ---
 
+server:
+  port: 8080
+
 spring:
   profiles: docker
   cloud:
     gateway:
       routes:
-        - id: account
+        # Account Service
+        - id: account-users
           uri: http://account:8082
           predicates:
-            - Path=/users/**, /auth/**, /admin/**
+            - Path=/users/**
+        - id: account-auth
+          uri: http://account:8082
+          predicates:
+            - Path=/auth/**
+        - id: account-admin
+          uri: http://account:8082
+          predicates:
+            - Path=/admin/**
+
+        # Writing Service
         - id: writing
           uri: http://writing:8081
           predicates:
-            - Path=/draft/**, 
+            - Path=/draft/**
+
+        # Publish Service
         - id: publish
           uri: http://publish:8084
           predicates:
             - Path=/products/**
+
+        # View Service
         - id: view
           uri: http://view:8085
           predicates:
-            - Path=/view/**
+            - Path=/view/**, /userAccessProfiles/**, /checkPrices/**, /checkIfBoughts/**, /viewHistories/**
         - id: viewhistories
           uri: http://view:8085
           predicates:
             - Path=/viewHistories/**
+
+        # AI Service
         - id: ai
           uri: http://ai:8086
           predicates:
-            - Path=/ai/**, 
-        - id: frontend
-          uri: http://frontend:8080
-          predicates:
-            - Path=/**
+            - Path=/ai/**
+
+        # Frontend Route (⚠ 주석 처리: 모든 요청을 가로채므로 주의)
+        # - id: frontend
+        #   uri: http://frontend:8080
+        #   predicates:
+        #     - Path=/**
+
       globalcors:
         corsConfigurations:
           '[/**]':
@@ -92,11 +115,13 @@ spring:
               - "*"
             allowCredentials: true
 
-server:
-  port: 8080
-
-# JWT 설정 추가
 jwt:
   secret: JwtSecretKey1234567890
   expirationMs: 900000
   refreshExpirationMs: 604800000
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty.http.client: DEBUG
+    reactor.netty.http.server: DEBUG
