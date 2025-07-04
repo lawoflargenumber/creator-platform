@@ -31,6 +31,7 @@ public class PublicationPolicy {
             System.out.println("### GenerationCompleted 이벤트 수신됨 ###");
 
             Products product = new Products();
+            product.setId(Long.valueOf(event.get("id").toString()));
             product.setAuthorId(Long.valueOf(event.get("authorId").toString()));
             product.setAuthorNickname((String) event.get("authorNickname"));
             product.setTitle((String) event.get("title"));
